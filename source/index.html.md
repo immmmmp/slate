@@ -3,9 +3,7 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
   - python
-  - javascript
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -15,7 +13,9 @@ includes:
   - errors
 
 search: true
+
 ---
+
 # 概览
 
 欢迎查看 Abit API 文档。 我们提供完整的 REST、Websocket API 以满足您的程序交易需求。您可以在    上找到每个连接选项的示例代码。
@@ -38,7 +38,7 @@ ts为utc时间戳，单位为毫秒。
 
 |    参数名    | 参数类型 |          参数描述          |
 | :----------: | :------: | :------------------------: |
-| Ex-Accesskey |  String  |          加密公钥          |
+| EX-Accesskey |  String  |          加密公钥          |
 |    EX-Ts     |   Long   |   utc时间戳，单位为毫秒    |
 |   EX-Sign    |  String  | 通过加密算法得到的加密签名 |
 
@@ -199,11 +199,11 @@ curl --location --request GET 'https://host.com/swap/pnls?instrumentID=1'
 }
 ```
 
-请求Url: `GET swap/pnls`
+### 请求Url 
 
-请求方式:GET
+`GET swap/pnls`
 
-参数列表:
+### 参数列表
 
 |    参数名    | 参数类型 | 参数示例 |                参数描述                |
 | :----------: | :------: | :------: | :------------------------------------: |
@@ -217,9 +217,12 @@ curl --location --request GET 'https://host.com/swap/pnls?instrumentID=1'
 ## 获取指数列表
 
 ###请求Url 
+
 `GET swap/indexes`
 
-参数列表:无
+### 参数列表
+
+无
 
 >curl请求示例:
 
@@ -314,6 +317,7 @@ curl --location --request GET 'https://host.com/swap/depth?instrumentID=1&count=
 ```
 
 ###请求Url
+
 `GET swap/depth`
 
 ###参数列表
@@ -404,6 +408,7 @@ curl --location --request GET 'https://host.com/swap/instruments?instrumentID=11
 
 
 ###请求Url
+
 `GET swap/instruments`
 
 
@@ -417,6 +422,7 @@ curl --location --request GET 'https://host.com/swap/instruments?instrumentID=11
 
 
 ## 获取合约信息
+
 >curl请求示例:
 
 ```curl
@@ -444,6 +450,7 @@ curl --location --request GET 'https://host.com/swap/fundingrate?instrumentID=11
 
 
 ###请求Url
+
 `GET swap/fundingrate`
 
 ###参数列表
@@ -493,7 +500,9 @@ Public
     ]
 }
 ```
+
 ###请求Url
+
 `GET swap/kline`
 
 
@@ -513,6 +522,7 @@ Public
 ## 获取合约ticker数据
 
 ###请求Url    
+
 `GET swap/tickers`
 
 
@@ -1498,7 +1508,73 @@ curl --location --request POST 'http://host.com/swap/cancelPlanOrders' \
 | 参数名        | 参数类型 | 参数示例 | 参数描述       | 是否必须 |
 | ------------- | -------- | -------- | -------------- | -------- |
 | instrument_id | Int      | 3        | 合约id         | 是       |
-| category      | Int list | [1,2,3]  | 合约订单id列表 | 是       |
+| orders        | Int list | [1,2,3]  | 合约订单id列表 | 是       |
+
+
+
+## 获取用户计划委托记录
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=1&offset=0&size=0&status=0'
+```
+
+> Response   ：
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "oid": 10540133,
+                "instrument_id": 3,
+                "uid": 10,
+                "px": "998",
+                "qty": "10",
+                "side": 1,
+                "trigger_type": 1,
+                "trend": 1,
+                "category": 1,
+                "cycle": 24,
+                "position_type": 1,
+                "leverage": "100",
+                "origin": "web",
+                "created_at": "2018-09-19T03:23:57.444639Z",
+                "finished_at": "2018-09-19T03:43:11.948255Z",
+                "status": 4,
+                "errno": 1   //错误码 0:触发成功 1:用户取消 2:超时 3:用户资产不够 4:订单将触发强平 5:订单无效 6:用户资产正处在托管中 7:仓位不存在 8:仓位量不够 9:仓位已经被关闭 10:合约已经暂停交易 11:反方向订单存在 12:合约已经下线 13:未知错误
+            }
+        ]
+    }
+}
+```
+
+### 请求Url    
+
+` GET swap/userLiqRecords`
+
+### 请求参数
+
+> 参数通过urlparam形式传入 
+
+| 参数名       | 参数类型 | 参数示例 | 参数描述 | 是否必须 |
+| ------------ | -------- | -------- | -------- | -------- |
+| instrumentID | Int      | 0        | 合约id   | 是       |
+| offset       | int      | 0        | 偏移量   | 是       |
+| size         | int      | 10       | 大小     | 否       |
+| status       | int      |          |          |          |
+|              |          |          |          |          |
+
+
+
+
+
+
+
+
 
 
 
