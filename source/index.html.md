@@ -1565,17 +1565,202 @@ curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=
 | instrumentID | Int      | 0        | 合约id   | 是       |
 | offset       | int      | 0        | 偏移量   | 是       |
 | size         | int      | 10       | 大小     | 否       |
-| status       | int      |          |          |          |
-|              |          |          |          |          |
+| status       | int      |    1      |   状态       |     是   |
 
 
 
 
 
+#Websocket 数据推送
 
 
+`GET 实时数据(WebSocket)`
+
+wss://host.com/swap/realTime
+
+### 地址
+
+- 测试环境 `wss://host.com/swap/realTime`
+
+### 命令
+
+- 基本命令格式发送格式 `{"action":"","args":["arg1", "arg2", "arg3"]}`
+
+- 命令返回格式
+
+  ```undefined
+  {
+    "action":"<command>",
+    "success":true,         // 成功-true, 失败-false
+    "group":"<group>",
+    "request":{
+        // 原始请求
+    },
+    "error":""  // 失败时有这个字段返回具体错误原因
+  }
+  ```
+
+- 支持命令列表
+
+  ```undefined
+  subscribe   // 订阅
+  unsubscribe //取消订阅
+  ```
+
+### 主题
+
+- 主题列表
+
+  ```undefined
+  这些主题列表是开放主题,不需要做ws认证.
+  Trade       //最新成交
+  PNL         //自动减仓排名
+  Ticker      //实时价格
+  OrderBook       //深度
+  QuoteBin1m  //1分钟行情数据
+  QuoteBin5m  //5分钟行情数据
+  QuoteBin30m //30分钟行情数据
+  QuoteBin1h  //1小时行情数据
+  QuoteBin2h  //2小时行情数据
+  QuoteBin4h  //4小时行情数据
+  QuoteBin6h  //6小时行情数据
+  QuoteBin12h //12小时行情数据
+  QuoteBin1d  //日行情数据
+  QuoteBin1w  //周行情数据|
+  IndexBin1m  //1分钟指数行情数据|
+  IndexBin5m  //5分钟指数行情数据|
+  IndexBin30m //30分钟指数行情数据|
+  IndexBin1h  //1小时指数行情数据|
+  IndexBin2h  //2小时指数行情数据|
+  IndexBin4h  //4小时指数行情数据|
+  IndexBin6h  //6小时指数行情数据|
+  IndexBin12h //12小时指数行情数据|
+  IndexBin1d  //日指数行情数据|
+  IndexBin1w  //周指数行情数据|
+  ```
+
+- 说明
+
+1. 除Ticker之外目前所有主题都跟合约ID相关
+2. 请求订阅命令，主题列表主题的构成方式为<主题:合约ID>,例如需要订阅合约(2)的实时深度和5分钟行情的命令为 `{"action":"subscribe","args":["OrderBook:2","QuoteBin5m:2"]}`
+3. orderbook是差量更新的,当消息的action为1表示全量数据,action为2表示增量数据.不管是全量数据,还是增量数据都是按照盘口排好序的. {"group":"OrderBook:1","action":1,"data":{"asks":[[862810,"8628.1","2666",0]]}} [862810, // 整型数key,方便排序用的 "8628.1", // 价格 "2666", // 量,如果量为0表示该book被删除了 0] // 1表示book中包含爆仓订单
+
+### 订阅数据格式
+
+- 基本格式如下
+
+  ```undefined
+  {
+    "group":"",
+    "data":{
+    }
+  }
+  // 订阅主题不同，data字段格式不同。data的具体以接口返回为准，请求输入对应主题的订阅命令获取
+  ```
+
+### 认证
+
+```undefined
+如果需要订阅跟用户自己信息相关的数据等私有信息,需要做ws认证
+// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+{
+    "action":"access",
+    "args":[
+        "Accesskey",       // 用户的Accesskey,必须是字符串
+        "api",              // Dev(EX-Dev) 必须是字符串
+        "1.0.0",            // Version(EX-Ver）必须是字符串
+        "Sign",              // Sign(EX-Sign) 必须是字符串
+        "1540286461000000",  // Ts(EX-Ts) 单位:微秒,必须是字符串
+        "36000", // 超时时间,只有是合约云接口认证需要      
+    ] 
+}
 
 
+Sign参数的值为:md5(sercet_key+Ts(字符串))
+```
+
+### 订阅私有数据
+
+```undefined
+// 订阅完成后(认证通过)就可以收到UserProperty主题的私有数据了,暂时只有一个UserProperty主题，所有私有数据都在这个主题返回
+{
+    "action":"subscribe",
+    "args":["UserProperty"]
+}
+
+// UserProperty主题,返回的数据格式
+{
+    "group":"UserProperty",
+    "data":[
+        {
+            "action":1, // 操作类型
+            "order":{   // 订单信息
+
+            },
+            "position":{ // 仓位信息
+
+            },
+            "c_assets":{  // 合约资产
+
+            },
+            "s_assets":{  // 现货资产
+
+            }
+        }
+    ]
+}
+"group":"UserProperty",表示该用户的的合约数据.以后台业务操作为驱动,推送用户数据的更新.一次推送可能包括多次业务操作,所以data是以数组形式,从数组的头开始,按操作先后顺序存放的用户的一组操作.每组数据的元素包括:action(操作类型),order(订单信息),position(仓位信息),c_assets(合约资产信息),s_assets(现货资产信息).对于订单信息,仓位信息,合约资产信息,现货资产信息,只有当操作这些信息产生了更新,每组数据的元素才会包含该信息.
+action:操作类型有
+1 :撮合.
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+2 :提交订单
+   可能产生的影响:订单更新,合约资产更新
+3 :取消订单
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+4 :强平取消订单
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+5 :被动ADL取消订单
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+6 :部分强平
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+7 :破产委托
+   可能产生的影响:新增订单,仓位更新,合约资产更新
+8 :被动ADL撮合成交
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+9 :主动ADL撮合成交
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+10 :从现货资产化入到合约资产
+   可能产生的影响:合约资产更新,现货资产更新
+11 :从合约资产化出到现货资产
+   可能产生的影响:合约资产更新,现货资产更新
+12 :追加保证金
+   可能产生的影响:仓位更新,合约资产更新
+13 :减少保证金
+   可能产生的影响:仓位更新,合约资产更新
+```
+
+### 心跳
+
+- 服务端会每隔10秒发送一个PingFrame到客户端，正常情况下客户端均会回复一个PongFrame。如果服务端连续5个PingFrame均没有收到应答。并且在此期间没有收到客户端的其他数据，服务端会主动断开链接。大部分浏览器收到PingFrame后均会自动给以PongFrame应答，不需要业务层实现。
+
+- 服务端在业务层实现了一个PingMessage Handle，收到PingMessage后会自动回复一个PongMessage，客户端底层如果没有办法处理websocket协议层的ping/pong frame可以通过业务层的ping/pong message判断链接是否健康。具体消息如下
+
+  ```undefined
+  // ping
+  {"action":"ping"}
+  // pong
+  {"group":"System","data":"pong"}
+  ```
+
+### 测试
+
+- 任何标准的Websocket客户端都可以用来测试
+
+- Chrome websocket测试插件
+
+  ```undefined
+  https://chrome.google.com/webstore/search/WebSocket%20Test%20Client?utm_source=chrome-ntp-icon
+  ```
 
 
 

@@ -1558,9 +1558,203 @@ curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=
 
 
 
+#Websocket data subscription
+
+
+#Websocket 数据推送
+
+
+`GET real time market data(WebSocket)`
+
+wss://host.com/swap/realTime
+
+### Address
+
+- test environment `wss://host.com/swap/realTime`
+
+### Command
+
+-  basic command sending format `{"action":"","args":["arg1", "arg2", "arg3"]}`
+
+- command return format
+
+  ```undefined
+  {
+    "action":"<command>",
+    "success":true,         
+    "group":"<group>",
+    "request":{
+        // origin request
+    },
+    "error":""  // if having this field when failed, return specific cause of failure
+
+  }
+  ```
+
+- support command list
+
+  ```undefined
+  subscribe   // 订阅
+  unsubscribe //取消订阅
+  ```
+
+### Theme
+
+- theme list
+
+  ```undefined
+  universal theme list (no need to do authorization verification)
+  Trade       //lastest trade
+  Ticker      //real time price
+  OrderBook   //depth
+  QuoteBin1m  //1 minute quotation data
+
+  QuoteBin5m  //5 minute quotation data
+  QuoteBin30m //30 minute quotation data
+  QuoteBin1h  //1 hour quotation data
+  QuoteBin2h  //2 hour quotation data
+  QuoteBin4h  //4 hour quotation data
+  QuoteBin6h  //6 hour quotation data
+  QuoteBin12h //12 hour quotation data
+  QuoteBin1d  //daily quotation data
+  QuoteBin1w  //weekly quotation data|
+  IndexBin1m  //1 minute index quotation data|
+  IndexBin5m  //5 minute index quotation data|
+  IndexBin30m //30 minute index quotation data|
+  IndexBin1h  //1 hour index quotation data|
+  IndexBin2h  //2 hour index quotation data|
+  IndexBin4h  //4 hour index quotation data|
+  IndexBin6h  //6 hour index quotation data|
+  IndexBin12h //12 hour index quotation data|
+  IndexBin1d  //daily index quotation data|
+  IndexBin1w  //weekly index quotation data|
+  ```
+
+- explanation
+
+1. 除Ticker之外目前所有主题都跟合约ID相关
+2. request subscription command， composition of themes in theme list are <theme:InstrumentID>,such as the command for subscribing spot trading pair EOS/ETH’s real time depth and 5 minute quotation is` {"action":"subscribe","args":["Depth:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
+3. orderbook是差量更新的,当消息的action为1表示全量数据,action为2表示增量数据.不管是全量数据,还是增量数据都是按照盘口排好序的. {"group":"OrderBook:1","action":1,"data":{"asks":[[862810,"8628.1","2666",0]]}} [862810, // 整型数key,方便排序用的 "8628.1", // 价格 "2666", // 量,如果量为0表示该book被删除了 0] // 1表示book中包含爆仓订单
 
 
 
+
+### Format Of Subscribing Data
+
+- base format is as followed
+
+  ```undefined
+  {
+    "group":"",
+    "data":{
+    }
+  }
+  ```
+
+### verification
+
+```if need to subscribe private information such as data related to user’s self-information etc., then there are 2 ways to do ws verification
+  1.verification through user name and password
+  // referred to Api Sign calculation method （the sequence of parameters is very important, don’t mess up with the sequence）
+  {
+      "action":"access",
+      "args":[
+          "uid",       // user ID, must be string
+          "web",              // device type. same as Dev(abit-dev) must be string
+          "1.0.0",            // client end version number,Version(abit-ver)must be string
+          "Sign",              // encrypted string,same as Sign(abit-sign),referred to Api Sign calculation method. must be string 
+          "1540286461000000",  // same as Ts(abit-ts) unit: microseconds, must be string 
+      ] 
+  }
+  2.verification through accessKey
+  // referred to Api Sign calculation method （the sequence of parameters is very important, don’t mess up with the sequence）
+  {
+      "action":"access",
+      "args":[
+          "Accesskey",       // Accesskey of the user, must be string
+          "api",              // Dev(abit-dev) must be string
+          "1.0.0",            // Version(abit-ver)must be string
+          "Sign",              // Sign(abit-sign) must be string
+          "1540286461000000",  // Ts(abit-ts) unit: microseconds, must be string 
+      ] 
+  }
+  
+  
+  parameter value of Sign is:md5(sercet_key+Ts(string))
+
+```
+
+### subscribe private data
+
+
+```// when subscribe is finished （passed verification）, private data in unicast theme can be received. There is only one unicast theme temporarily. All the private data will be returned in this theme
+   {
+       "action":"subscribe",
+       "args":["unicast"]
+   }
+   
+   // unicast theme,format of returned data
+   {
+       "group":"SUD",
+       "data":[
+           {
+               "action":1, // operation type
+               "order":{   // order information
+   
+               },
+               "s_assets":[  // spot asset list
+   
+               ],
+               "c_assets":{  // contract asset
+   
+               }
+           }
+       ]
+   }
+   "group":"SUD", indicating the user’s spot trading data. Driven by backend operation. Push user data updates. One push may include multiple business operations, so data is in the form of an array, starting from the head of the array, a set of user operations stored in order of operations. The elements of each group of data includes: action (operation Type), order (order information), s_assets (spot asset information, note it is the array of spot assets), c_assets (contract asset information). For order information, spot asset information, contract asset information, only when the operation of these information generated updates, can each set of data elements contain that information.
+   action: operation types include
+   1: Matching.
+      Possible impact: order update, position update, contract asset update
+   2: Submit order
+      Possible impact: order update, contract asset update
+   3: Order cancellation:
+      Possible impact: order update, position update, contract asset update
+   11: Transfer from contract asset to spot assets
+      Possible impact: contract asset update, spot asset update
+   12: Transfer from spot asset to contract account
+```
+
+### heartbeat
+
+- The server will send a PingFrame to the client end every 10 seconds. Under normal circumstances, the client end will reply with a PongFrame. If the server does not receive a response for five consecutive PingFrames, and during this period, no other data from the client is received, the server will actively disconnect the link. After receiving PingFrame, most browsers will automatically respond with PongFrame without the need of business layer implementation.
+
+
+- The server implements a PingMessage Handle in the business layer. After receiving the PingMessage, it will automatically reply with a PongMessage. If the bottom layer of the client end has no way to handle the ping / pong frame of the websocket protocol layer, the ping / pong message of the business layer can determine whether the link is healthy.  The specific message is as follows
+
+
+  ```undefined
+  // ping
+  {"action":"ping"}
+  // pong
+  {"group":"System","data":"pong"}
+  ```
+
+### testing
+
+
+- Websocket client ends for any standard can be used for testing
+
+
+- Chrome websocket test plugin
+
+  ```undefined
+  https://chrome.google.com/webstore/search/WebSocket%20Test%20Client?utm_source=chrome-ntp-icon
+  ```
+
+
+
+
+# 现货交易
 
 
 
