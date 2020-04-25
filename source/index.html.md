@@ -11,8 +11,10 @@ toc_footers:
 
 includes:
   - errors
+  - en
 
 search: true
+
 
 ---
 
@@ -41,6 +43,21 @@ ts为utc时间戳，单位为毫秒。
 | EX-Accesskey |  String  |          加密公钥          |
 |    EX-Ts     |   Long   |   utc时间戳，单位为毫秒    |
 |   EX-Sign    |  String  | 通过加密算法得到的加密签名 |
+
+整个身份验证为Header为：
+
+### Header
+
+| 参数名       | 参数类型 | 参数示例         | 参数描述                            | 是否必须 |
+| ------------ | -------- | ---------------- | ----------------------------------- | -------- |
+| Content-Type | String   | application/json | 定值                                | 是       |
+| EX-Accesskey | String   |                  |                                     | 是       |
+| EX-Sign      | int      |                  | MD5({postdata}+{secretKey}+{EX-Ts}) | 是       |
+| EX-Ver       | int      | 1008             | 定值                                | 是       |
+| EX-Dev       | String   | WEB              | 定值                                | 是       |
+| EX-Ts        | Long     | 1541044393000000 | utc时间戳-微妙                      | 是       |
+
+
 
 
 
@@ -85,13 +102,13 @@ curl --location --request GET 'https://host.com/swap/indexkline?indexID=11&start
 
 ### 参数列表
 
-|   参数名   |  参数类型  |       参数示例        |                           参数描述                           |
-| :--------: | :--------: | :-------------------: | :----------------------------------------------------------: |
-|  indexID   |   String   |          11           |                            指数id                            |
-| startTime  | 1533686400 | 获取k线数据的起始时间 |                                                              |
-|  endTime   | 1533688400 | 获取k线数据的结束时间 |                                                              |
-|    unit    |    Int     |           5           | 选择的时间跨度的长度，在示例中表示为5M，即5分钟为每根蜡烛图的时间跨度 |
-| resolution |   String   |           M           |         表示获取K线数据的频率类型,M:分钟,H:小时;D:天         |
+|   参数名   | 参数类型 |  参数示例  |                           参数描述                           |
+| :--------: | :------: | :--------: | :----------------------------------------------------------: |
+|  indexID   |  String  |     11     |                            指数id                            |
+| startTime  |   Long   | 1533686400 |                    获取k线数据的起始时间                     |
+|  endTime   |   Long   | 1533688400 |                    获取k线数据的结束时间                     |
+|    unit    |   Int    |     5      | 选择的时间跨度的长度，在示例中表示为5M，即5分钟为每根蜡烛图的时间跨度 |
+| resolution |  String  |     M      |         表示获取K线数据的频率类型,M:分钟,H:小时;D:天         |
 
 ## 获取合约交易记录
 
@@ -587,7 +604,9 @@ curl --location --request GET 'https://host.com/swap/tickers?instrumentID=1'
 
 # 合约交易接口
 
-在此类别中，所有接口都需要进行身份验证。
+在此类别中，所有接口都需要进行身份验证。验证参数放在Header中
+
+
 
 ## 撤销合约订单
 
@@ -764,17 +783,6 @@ curl --location --request POST 'https://host.com/swap/batchOrders' \
 | px            | decimal  |          | 价格                                 | 是       |
 | qty           | decimal  |          | 数量                                 | 是       |
 
-### Header
-
-| 参数名       | 参数类型 | 参数示例         | 参数描述                            | 是否必须 |
-| ------------ | -------- | ---------------- | ----------------------------------- | -------- |
-| Content-Type | String   | application/json | 定值                                | 是       |
-| EX-Accesskey | String   |                  |                                     | 是       |
-| EX-Sign      | int      |                  | MD5({postdata}+{secretKey}+{EX-Ts}) | 是       |
-| EX-Ver       | int      | 1008             | 定值                                | 是       |
-| EX-Dev       | String   | WEB              | 定值                                | 是       |
-| EX-Ts        | Long     | 1541044393000000 | utc时间戳-微妙                      | 是       |
-
 
 
 ## 单次提交订单
@@ -829,8 +837,8 @@ curl --location --request POST 'https://host.com/swap/submitOrder' \
 | side          | int      | 1          | 订单方向,1:开多,2:开空,3:平多,4:平空 | 是       |
 | position_type | 开仓方式 | 1          | 开放方式,1:逐仓,2:全仓,平仓不必传    | 是       |
 | leverage      | decimal  | 10         | 杠杆倍数                             | 是       |
-| px            | decimal  |            | 价格                                 | 是       |
-| qty           | decimal  |            | 数量                                 | 是       |
+| px            | decimal  | 17.2       | 价格                                 | 是       |
+| qty           | decimal  | 12.4       | 数量                                 | 是       |
 | nonce         | int      | 1533873979 | 当前时间戳                           | 是       |
 
 
@@ -876,10 +884,10 @@ curl --location --request GET 'https://host.com/swap/accounts?coinCode=USDT' \
 
 > 参数通过urlparam形式传入 
 
-| 参数名        | 参数类型 | 参数示例           | 参数描述 | 是否必须 |
-| ------------- | -------- | ------------------ | -------- | -------- |
-| instrument_id | Int      | 3                  | 合约id   | 否       |
-| String        | USDT     | 合约的计价币种名称 | 否       |          |
+| 参数名        | 参数类型 | 参数示例 | 参数描述           | 是否必须 |
+| ------------- | -------- | -------- | ------------------ | -------- |
+| instrument_id | Int      | 3        | 合约id             | 否       |
+| coinCode      | String   | USDT     | 合约的计价币种名称 | 否       |
 
 
 
@@ -948,12 +956,12 @@ curl --location --request GET 'https://host.com/swap/userPositions?coinCode=USDT
 
 > 参数通过urlparam形式传入 
 
-| 参数名   | 参数类型 | 参数示例                                                     | 参数描述           | 是否必须 |
-| -------- | -------- | ------------------------------------------------------------ | ------------------ | -------- |
-| coinCode | String   | USDT                                                         | 合约的计价币种名称 | 是       |
-| int      | 1        | 仓位状态 1:持仓中 2:系统委托中 4:已平仓 如果请求参数中的status值为3,标识同时请求持仓中和系统委托中的仓位 如果请求参数中的status值为0或者7,标识同时请求所有状态的仓位 | 是                 |          |
-| offset   | int      |                                                              | 1                  |          |
-| size     | int      |                                                              | 0                  |          |
+| 参数名   | 参数类型 | 参数示例 | 参数描述                                                     | 是否必须 |
+| -------- | -------- | -------- | ------------------------------------------------------------ | -------- |
+| coinCode | String   | USDT     | 合约的计价币种名称                                           | 是       |
+| Status   | int      | 1        | 仓位状态 1:持仓中 2:系统委托中 4:已平仓 如果请求参数中的status值为3,标识同时请求持仓中和系统委托中的仓位 如果请求参数中的status值为0或者7,标识同时请求所有状态的仓位 | 是       |
+| offset   | int      | 0        |                                                              | 是       |
+| size     | int      | 10       |                                                              | 否       |
 
 
 
@@ -1010,10 +1018,10 @@ curl --location --request GET 'https://host.com/swap/positionTax?instrumentID=32
 
 > 参数通过urlparam形式传入 
 
-| 参数名   | 参数类型   | 参数示例 | 参数描述 | 是否必须 |
-| -------- | ---------- | -------- | -------- | -------- |
-| coinCode | Int        | 2        | 合约id   | 是       |
-| int      | 2154205116 | 仓位id   | 是       |          |
+| 参数名       | 参数类型 | 参数示例   | 参数描述 | 是否必须 |
+| ------------ | -------- | ---------- | -------- | -------- |
+| instrumentId | Int      | 2          | 合约id   | 是       |
+| pid          | int      | 2154205116 | 仓位id   | 是       |
 
 
 
@@ -1182,7 +1190,7 @@ curl --location --request GET 'https://host.com/swap/userOrders?instrumentID=1&o
 | ------------- | -------- | -------- | ------------------------------------------------------------ | -------- |
 | offset        | Int      | 2        | 偏移量                                                       | 是       |
 | instrument_id | Int      | 0        | 合约id                                                       | 是       |
-| ize           | int      | 1        | 记录数量                                                     | 是       |
+| size          | int      | 1        | 记录数量                                                     | 是       |
 | status        | int      | 10       | 订单状态 1:申报中 2:委托中 4:完成 如果请求参数status=3,标识同时请求申报中和委托中的订单,如果请求参数status=0或者7,标识同时请求所有状态的订单 | 是       |
 
 
@@ -1565,7 +1573,7 @@ curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=
 | instrumentID | Int      | 0        | 合约id   | 是       |
 | offset       | int      | 0        | 偏移量   | 是       |
 | size         | int      | 10       | 大小     | 否       |
-| status       | int      |    1      |   状态       |     是   |
+| status       | int      | 1        | 状态     | 是       |
 
 
 
