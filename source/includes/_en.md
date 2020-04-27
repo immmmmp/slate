@@ -57,7 +57,7 @@ REST endpoint URL: **https://host.com/**
 curl --location --request GET 'https://host.com/swap/indexkline?indexID=11&startTime=1533686400&endTime=1533688400&unit=5&resolution=M'
 ```
 
-> 返回数据:
+> returned data:
 
 ```response-data
 {
@@ -92,8 +92,8 @@ curl --location --request GET 'https://host.com/swap/indexkline?indexID=11&start
 |  indexID   | String |     11     |                           index id                           |
 | startTime  | String | 1533686400 |                                                              |
 |  endTime   | String | 1533686400 |                                                              |
-|    unit    |  Int   |     5      | 选择的时间跨度的长度，在示例中表示为5M，即5分钟为每根蜡烛图的时间跨度 |
-| resolution | String |     M      |         表示获取K线数据的频率类型,M:分钟,H:小时;D:天         |
+|    unit    |  Int   |     5      | It indicates the selected time length. For example, 5M means that it takes 5 minutes to present a new candlestick on the candlestick chart. |
+| resolution | String |     M      | It indicates the frequency type of obtaining candlestick chart data. M: minute, H: hour, D: day |
 
 ## Obtain Data of Contract Trading Records
 
@@ -125,14 +125,14 @@ curl --location --request GET 'https://host.com/swap/trades?instrumentID=1'
              
              1 //buy order:taker,order side：open long buy,open short sell
              2 //buy order:taker,order side：open long buy,close long sell 
-             3 //buy order:taker,order side：：close short buy , open short sell
-             4 //buy order:taker,order side：：close short buy , close long sell
-             5 //sell order:taker,order side：：open short buy,open long sell
-             6 //sell order:taker,order side：：开空卖 平空买
-             7 //sell order:taker,order side：：平多卖 开多买
-             8 //sell order:taker,order side：：平多卖 平空买
-                "change": "0"    				// 对行情的影响
-                										如本次交易前的最新交易价yes10,本次交易的交易价yes11,则change为"1"
+             3 //buy order:taker,order side：close short buy , open short sell
+             4 //buy order:taker,order side：close short buy , close long sell
+             5 //sell order:taker,order side：open short buy,open long sell
+             6 //sell order:taker,order side：open short sell, close short buy
+             7 //sell order:taker,order side：close long sell, open long buy
+             8 //sell order:taker,order side：close long sell, close short buy
+                "change": "0"    				// the influence to the market
+                										if the latest price before this transaction is 10 and the latest price after this transaction is 11, then the change is "1".
             }
         ]
     }
@@ -166,7 +166,7 @@ curl --location --request GET 'https://host.com/swap/pnls?instrumentID=1'
     "errno": "OK",
     "message": "Success",
     "data": {
-// 合约自动减仓排序表
+// ADL sequence of contract position
 "pnls": [
 {
 "instrument_id": 1,
@@ -370,7 +370,7 @@ curl --location --request GET 'https://host.com/swap/instruments?instrumentID=11
 																																5  // settling
 																																6  // settled
 																																
-                "area": 2,                       						//1:USDT区,2:主区,3:创新区,4:模拟区
+                "area": 2,                       						//1:USDT section,2:main section,3:innovation section,4:demo section
                 "created_at": "2018-09-29T10:02:42Z",       
                 "depth_round": "1.001",                     
                 "base_coin_zh": "比特现金",                  
@@ -504,8 +504,8 @@ Public
 |  indexID   | String |     11     |                                                              |
 | startTime  |   ts   | 1533686400 |                                                              |
 |  endTime   |   ts   | 1533688400 |                                                              |
-|    unit    |  Int   |     5      | 选择的时间跨度的长度，在示例中表示为5M，即5分钟为每根蜡烛图的时间跨度 |
-| resolution | String |     M      |         表示获取K线数据的频率类型,M:分钟,H:小时;D:天         |
+|    unit    |  Int   |     5      | It indicates the selected time length. For example, 5M means that it takes 5 minutes to present a new candlestick on the candlestick chart. |
+| resolution | String |     M      | It indicates the frequency type of obtaining candlestick chart data. M: minute, H: hour, D: day |
 
 
 
@@ -716,7 +716,7 @@ curl --location --request POST 'https://host.com/swap/batchOrders' \
               "err": {
                   "http_err":405,
                   "err_code":"LIQUIDATE_ORDER",
-                  "err_msg":"订单将触发强平"
+                  "err_msg":"Order is about to trigger the forced close-out"
               }
           },
           {
@@ -742,27 +742,27 @@ curl --location --request POST 'https://host.com/swap/batchOrders' \
 
 ### order
 
-| param         | type     | example | description                                          | is required |
-| ------------- | -------- | ------- | ---------------------------------------------------- | ----------- |
-| Instrument_id | Int      | 3       | 合约id                                               | yes         |
-| category      | Int      | 1       | 1:limit price,2:market price                         | yes         |
-| client_id     | int      | 1       |                                                      | yes         |
-| side          | int      | 1       | 1:open long ,2:open short,3:close long,4:close short | yes         |
-| position_type | 开仓方式 | 1       | 1:fixed,2:cross                                      | yes         |
-| leverage      | decimal  | 10      |                                                      | yes         |
-| px            | decimal  |         | Price                                                | yes         |
-| qty           | decimal  |         |                                                      | yes         |
+| param         | type    | example | description                                                | is required |
+| ------------- | ------- | ------- | ---------------------------------------------------------- | ----------- |
+| Instrument_id | Int     | 3       | instrument id                                              | yes         |
+| category      | Int     | 1       | 1: limit price, 2: market price                            | yes         |
+| client_id     | int     | 1       |                                                            | yes         |
+| side          | int     | 1       | 1: open long, 2: open short, 3: close long, 4: close short | yes         |
+| position_type | int     | 1       | 1: fixed, 2: cross                                         | yes         |
+| leverage      | decimal | 10      |                                                            | yes         |
+| px            | decimal |         | Price                                                      | yes         |
+| qty           | decimal |         |                                                            | yes         |
 
 ### Header
 
 | param        | type   | example          | description                         | is required |
 | ------------ | ------ | ---------------- | ----------------------------------- | ----------- |
-| Content-Type | String | application/json | 定值                                | yes         |
+| Content-Type | String | application/json | fixed value                         | yes         |
 | EX-Accesskey | String |                  |                                     | yes         |
 | EX-Sign      | int    |                  | MD5({postdata}+{secretKey}+{EX-Ts}) | yes         |
-| EX-Ver       | int    | 1008             | 定值                                | yes         |
-| EX-Dev       | String | WEB              | 定值                                | yes         |
-| EX-Ts        | Long   | 1541044393000000 | utc时间戳-微妙                      | yes         |
+| EX-Ver       | int    | 1008             | fixed value                         | yes         |
+| EX-Dev       | String | WEB              | fixed value                         | yes         |
+| EX-Ts        | Long   | 1541044393000000 | utc timestamp-microsecond           | yes         |
 
 
 
@@ -810,17 +810,17 @@ curl --location --request POST 'https://host.com/swap/submitOrder' \
 
 ### Request Body 
 
-| param         | type     | example    | description                                          | is required |
-| ------------- | -------- | ---------- | ---------------------------------------------------- | ----------- |
-| Instrument_id | Int      | 3          |                                                      | yes         |
-| category      | Int      | 1          |                                                      | yes         |
-| client_id     | int      | 1          |                                                      | yes         |
-| side          | int      | 1          | 1:open long ,2:open short,3:close long,4:close short | yes         |
-| position_type | 开仓方式 | 1          | 1:fixed,2:cross                                      | yes         |
-| leverage      | decimal  | 10         |                                                      | yes         |
-| px            | decimal  |            |                                                      | yes         |
-| qty           | decimal  |            |                                                      | yes         |
-| nonce         | int      | 1533873979 | 当前时间戳                                           | yes         |
+| param         | type    | example    | description                                          | is required |
+| ------------- | ------- | ---------- | ---------------------------------------------------- | ----------- |
+| Instrument_id | Int     | 3          |                                                      | yes         |
+| category      | Int     | 1          |                                                      | yes         |
+| client_id     | int     | 1          |                                                      | yes         |
+| side          | int     | 1          | 1:open long ,2:open short,3:close long,4:close short | yes         |
+| position_type | int     | 1          | 1:fixed,2:cross                                      | yes         |
+| leverage      | decimal | 10         |                                                      | yes         |
+| px            | decimal |            |                                                      | yes         |
+| qty           | decimal |            |                                                      | yes         |
+| nonce         | int     | 1533873979 | current timestamp                                    | yes         |
 
 
 
@@ -840,8 +840,8 @@ curl --location --request GET 'https://host.com/swap/accounts?coinCode=USDT' \
 > Response   ：
 
 ```response-data
-#成功
-合约账号列表
+#success
+contract accounts list
 "accounts": [
             {
                 "account_id": 10, 
@@ -851,8 +851,8 @@ curl --location --request GET 'https://host.com/swap/accounts?coinCode=USDT' \
                 "cash_vol": "0", 
                 "realised_vol": "-0.5", 
                 "earnings_vol": "-0.5",
-                "created_at":  // 创建时间 "2018-07-13T16:48:49+08:00",
-                "updated_at":  // 修改时间 "2018-07-13T18:34:45.900387+08:00"
+                "created_at":  // created time "2018-07-13T16:48:49+08:00",
+                "updated_at":  // updated time "2018-07-13T18:34:45.900387+08:00"
             }
         ]
 ```
@@ -888,7 +888,7 @@ curl --location --request GET 'https://host.com/swap/userPositions?coinCode=USDT
 > Response   ：
 
 ```response-data
-#成功
+#success
 {
     "errno": "OK",
     "message": "Success",
@@ -912,7 +912,7 @@ curl --location --request GET 'https://host.com/swap/userPositions?coinCode=USDT
                 "tax": "0",                   //refund fee cost
                 "position_type": 1,           
                 "side": 2,                    
-                "status": 1,                  //状态  1:hold position  2:system  4:closed
+                "status": 1,                  //status  1:hold position  2:system  4:closed
                 "errno": 0,                   //close position reason
                 															1:closing position
 																							2:breaking up 
@@ -1195,7 +1195,7 @@ curl --location --request GET 'https://host.com/swap/queryOrder?instrumentID=1&o
     "errno": "OK",
     "message": "Success",
     "data": {
-        // 订单信息
+        // order info
         "orders": [
             {
                 "oid": 10539098, 
@@ -1209,18 +1209,15 @@ curl --location --request GET 'https://host.com/swap/queryOrder?instrumentID=1&o
                 "cum_qty": "1", 
                 "side": 3,   
                 "category": 1, //  
-                                  该字段采用二进制按位表示法
-                                  0~5位表示订单的基本类型,第6位预留,
-                                  第7位为1表示:强平委托单
-                                  第8位为1表示:爆仓委托单
-                                  第9位为1表示:自动减仓委托单
+                                  A bit-by-bit binary representation applies to this field
+                                  The 0-5th bit represents the type of the order; the 6th bit is reserved; value 1 of 7th bit represents forced close-out order; value 1 of 8th bit represents blow-up order; value 1 of 9th bit represents ADL order
                 "make_fee": "0.00025", // make fee
                 "take_fee": "0.012", // take fee
                 "origin": "",
                 "created_at": "2018-07-23T11:55:56.715305Z",
                 "finished_at": "2018-07-23T11:55:56.763941Z",
-                "status": 4, // 状态
-                "errno": 0,  // 订单结束原因
+                "status": 4, // status
+                "errno": 0,  // reason for the order finish
                 								1:user cancel
 																2:over time limit
 																3:don't have enough balance when place order
@@ -1429,21 +1426,21 @@ curl --location --request POST 'http://host.com/swap/submitPlanOrder' \
 
 ### Request Body 
 
-| param         | type     | example    | description                                         | is required |
-| ------------- | -------- | ---------- | --------------------------------------------------- | ----------- |
-| instrument_id | Int      | 3          | 合约id                                              | yes         |
-| category      | Int      | 1          | 1:limit,2:market                                    | yes         |
-| client_id     | int      | 1          |                                                     | yes         |
-| side          | int      | 1          | 1:open long,2:open short,3:close long,4:close short | yes         |
-| position_type | 开仓方式 | 1          | 1:fixed,2:cross                                     | yes         |
-| leverage      | decimal  | 10         |                                                     | yes         |
-| px            | decimal  |            | Trigger price                                       | yes         |
-| qty           | decimal  |            |                                                     | yes         |
-| nonce         | int      | 1533873979 |                                                     | yes         |
-| trigger_type  | int      |            | 1:trade price ,2:target price;4:index price         | yes         |
-| trend         | int      | 1          | 1:long,2:short                                      | yes         |
-| exec_px       | int      | 980        |                                                     |             |
-| cycle         | Int      | 10         |                                                     |             |
+| param         | type    | example    | description                                                | is required |
+| ------------- | ------- | ---------- | ---------------------------------------------------------- | ----------- |
+| instrument_id | Int     | 3          | instrument id                                              | yes         |
+| category      | Int     | 1          | 1: limit, 2: market                                        | yes         |
+| client_id     | int     | 1          |                                                            | yes         |
+| side          | int     | 1          | 1: open long, 2: open short, 3: close long, 4: close short | yes         |
+| position_type | int     | 1          | 1: fixed, 2: cross                                         | yes         |
+| leverage      | decimal | 10         |                                                            | yes         |
+| px            | decimal |            | Trigger price                                              | yes         |
+| qty           | decimal |            |                                                            | yes         |
+| nonce         | int     | 1533873979 |                                                            | yes         |
+| trigger_type  | int     |            | 1: trade price, 2: target price; 4: index price            | yes         |
+| trend         | int     | 1          | 1: long, 2: short                                          | yes         |
+| exec_px       | int     | 980        |                                                            |             |
+| cycle         | Int     | 10         |                                                            |             |
 
 
 
@@ -1532,7 +1529,7 @@ curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=
                 "created_at": "2018-09-19T03:23:57.444639Z",
                 "finished_at": "2018-09-19T03:43:11.948255Z",
                 "status": 4,
-                "errno": 1   // 0:success 1:cancle 2:over time 3:not enough balance 4:订单将触发强平 5:invalid order 6:用户资产正处在托管中 7:position not exist 8:position cant reach required 9:position has been canceled 10:the instrument has suspended
+                "errno": 1   // 0:success 1:cancle 2:over time 3:not enough balance 4:order is aboout to trigger forced close-out 5:invalid order 6:user asset is under custody 7:position not exist 8:position cant reach required 9:position has been canceled 10:the instrument has suspended
             }
         ]
     }
@@ -1560,8 +1557,7 @@ curl --location --request GET 'http://host.com/swap/userPlanOrders?instrumentID=
 
 #Websocket data subscription
 
-
-#Websocket 数据推送
+#Websocket data push
 
 
 `GET real time market data(WebSocket)`
@@ -1594,8 +1590,8 @@ wss://host.com/swap/realTime
 - support command list
 
   ```undefined
-  subscribe   // 订阅
-  unsubscribe //取消订阅
+  subscribe   // subscribe
+  unsubscribe //unsubscribe
   ```
 
 ### Theme
@@ -1632,9 +1628,9 @@ wss://host.com/swap/realTime
 
 - explanation
 
-1. 除Ticker之外目前所有主题都跟合约ID相关
+1. Except ticker, all other themes are related to InstrumentID
 2. request subscription command， composition of themes in theme list are <theme:InstrumentID>,such as the command for subscribing spot trading pair EOS/ETH’s real time depth and 5 minute quotation is` {"action":"subscribe","args":["Depth:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
-3. orderbook是差量更新的,当消息的action为1表示全量数据,action为2表示增量数据.不管是全量数据,还是增量数据都是按照盘口排好序的. {"group":"OrderBook:1","action":1,"data":{"asks":[[862810,"8628.1","2666",0]]}} [862810, // 整型数key,方便排序用的 "8628.1", // 价格 "2666", // 量,如果量为0表示该book被删除了 0] // 1表示book中包含爆仓订单
+3. orderbook is updated upon data difference. When action is 1, it stands for full data. When action is 2, it stands for incremental data. They are both sorted according to the orderbook.  {"group":"OrderBook:1","action":1,"data":{"asks":[[862810,"8628.1","2666",0]]}} [862810, // Integer key, easy for sorting  "8628.1", // price "2666", // volume, if value is 0 then it means the book is deleted  0] // if value is 1 then it means the book contains blow-up order
 
 
 
@@ -1754,11 +1750,11 @@ wss://host.com/swap/realTime
 
 
 
-# 现货交易
+# Spot Trading
 
 
 
 
 
 
-# 现货交易
+# Spot Trading
