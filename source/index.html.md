@@ -1774,3 +1774,824 @@ action:操作类型有
 
 
 # 现货交易
+
+
+
+
+# 现货公共信息-REST
+
+对于合约公共信息请求的EndPoint地址为：https://host.com/
+
+## 获取交易对信息
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/instruments?symbol=BTC/USDT'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "instruments": [
+            {
+            // 现货对象属性说明
+            "instrument_id": 22,  // 现货对ID
+            "symbol": "BTC/USDT", // 现货对名称
+            "base_coin": "BTC",   // 基础币
+            "quote_coin": "USDT", // 计价币
+            "rank": 5,            // 系统排序
+            "px_unit": "0.0001",  // 价格精度
+            "qty_unit": "0.0001", // 量精度
+            "tip_limit": "0.2",   // 价格输入无效预警范围
+            "min_qty": "0.0001",  // 订单最小量
+            "status": 1,          // 现货对状态
+                                        1  // 上线
+                                        2  // 审批中
+                                        3  // 测试中
+                                        5  // 暂停交易
+                                        6  // 下线
+            "big_icon": "",       
+            "small_icon": "",
+            "gray_icon": "",
+            "created_at": null,
+            "market_order_risk_type": 1,//1:按order book价格幅度约束,
+            													2:按order book档位约束,
+            													0:表示该币对不支持市价单
+            "market_order_risk_deal_scope": "0.2",
+            "fee_configs": [
+                {
+                    "coin_code": "BTC", //收取手续费的币
+                    "fee_ratio": "0.1",
+                    "type": 3  //收取手续费的类型,1:只收买单的手续费,2:只收卖单的手续费,3:买卖单都收取 
+                }
+            ] 前端下单价格预警超出范围
+            }
+        ]
+    }
+}
+
+```
+
+### 请求Url
+
+`GET spot/instruments`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |              参数描述              |
+| :----: | :------: | :------: | :--------------------------------: |
+| symbol |  String  | BTC/USDT | 现货名称，不传表示获取所有币种信息 |
+
+
+
+## 获取币币深度
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/depth?symbol=BTC/USDT' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: WEB' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        // 卖盘,按价格由小到大排序
+        "asks": [
+            [
+                80000, // key
+                "8",   // 价格
+                "1",   // 量
+                0      
+            ],
+            [
+                82000,
+                "8.2",
+                "1",
+                0
+            ],
+        // 买盘,按价格由大到小排序
+        "bids": [
+            [
+                74000, // key
+                "7.4", // 价格
+                "1",   // 量
+                0
+            ],
+            [
+                73000,
+                "7.3",
+                "1",
+                0
+            ],
+        ]
+    }
+}
+```
+
+### 请求Url
+
+`GET spot/depth`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |              参数描述              |
+| :----: | :------: | :------: | :--------------------------------: |
+| symbol |  String  | BTC/USDT | 现货名称，不传表示获取所有币种信息 |
+
+
+
+## 获取币币ticker
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/tickers?symbol=BTC/USDT'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": [ // ticker数组
+        {
+            "symbol": "ETH/USDT",
+            "last_px": "135.5", // 最后成交价
+            "open": "137.17",      // 当天的开盘价
+            "close": "135.5",      // 当天的收盘价
+            "low": "127.87",       // 当天的最低价
+            "high": "137.38",      // 当天的最高价
+            "avg_px": "134.838547255697", // 当天的均价
+            "last_qty": "10.135", // 最后一笔成交量
+            "qty24": "21244.5602", // 24小时成交量
+            "timestamp": 1551322866,
+            "change_rate": "-0.012174673762", // 当天的涨跌幅度
+            "change_value": "-1.67", // 当天的涨跌
+            "qty_day": "9789.7338", // 当天的成交量
+            "amount24": "2894738.555982" // 24小时成交额
+        }
+    ]
+}
+```
+
+### 请求Url
+
+`GET spot/ticker`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |              参数描述              |
+| :----: | :------: | :------: | :--------------------------------: |
+| symbol |  String  | BTC/USDT | 现货名称，不传表示获取所有币种信息 |
+
+
+
+## 获取币币交易记录
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/trades?symbol=BTC/USDT&offset=0&size=10' 
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        "trades":[
+            {
+                "oid":100039430677,  //taker order id
+                "tid":100039430678,  //trade id 
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",  //utc时间
+                "side":2,    //taker order 方向
+                "change":"0"  //对现货价格的影响,涨跌额度
+            }
+        ]
+```
+
+### 请求Url
+
+`GET spot/trades`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |              参数描述              |
+| :----: | :------: | :------: | :--------------------------------: |
+| symbol |  String  | BTC/USDT | 现货名称，不传表示获取所有币种信息 |
+| offset |   Int    |    0     |               偏移量               |
+|  size  |   Int    |    20    |             记录量大小             |
+
+
+
+## 获取币币k线数据
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/kline?symbol=BTC/USDT&startTime=0&endTime=2532656524&unit=5&resolution=M'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": [ // 数组
+        {
+            "last_px": "135.5", // 最后成交价
+            "open": "137.17",      // 当天的开盘价
+            "close": "135.5",      // 当天的收盘价
+            "low": "127.87",       // 当天的最低价
+            "high": "137.38",      // 当天的最高价
+            "avg_px": "134.838547255697", // 当天的均价
+            "last_qty": "10.135", // 最后一笔成交量
+            "timestamp": 1551322866,
+            "change_rate": "-0.012174673762", //涨跌比例
+            "change_value": "-1.67", // 涨跌额度
+        }
+    ]
+}
+```
+
+### 请求Url
+
+`GET spot/kline`
+
+### 参数列表
+
+|   参数名   | 参数类型 |  参数示例  |              参数描述              |
+| :--------: | :------: | :--------: | :--------------------------------: |
+|   symbol   |  String  |  BTC/USDT  | 现货名称，不传表示获取所有币种信息 |
+| startTime  |   Int    |     0      |              开始时间              |
+|  endTime   |   Int    | 2532656524 |              结束时间              |
+|    unit    |   Int    |     5      |             蜡烛图频率             |
+| resolution |  String  |     M      |              频率单位              |
+
+# 交易接口
+
+
+
+## 提交订单
+
+
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/submitOrder' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw '{
+   "symbol":"EOS/ETH",
+   "px":"0.01",
+   "qty":"10.2",
+   "side":2,
+   "category":1,
+   "nonce":1545820222
+}'
+```
+
+> Response：
+
+```response-data
+{
+	"errno": "OK",
+	"message": "Success",
+	"data": {
+		"oid": 10540013  //order id
+	}
+}
+失败: {
+	"errno": "failed",
+	"message": "失败原因",
+	
+}
+```
+
+### 请求Url    
+
+`POST swap/submitOrder`
+
+### 参数列表 Body 
+
+|  参数名  | 参数类型 |  参数示例  |                        参数描述                         |
+| :------: | :------: | :--------: | :-----------------------------------------------------: |
+|  symbol  |  String  |  BTC/USDT  |                       交易对名称                        |
+|    px    | Decimal  |    7293    |                          价格                           |
+|   qty    | Decimal  |    10.2    |                          数量                           |
+|   side   |   Int    |     2      |                     方向,1:买，2:卖                     |
+| category |   Int    |     1      | 类别，1:限价单,2:为市价单,市价单时价格必须为字符串的"0" |
+|  nonce   |   int    | 1545820222 |                         时间戳                          |
+
+
+
+## 取消订单
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/cancelOrder' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw '{"oid":14369318,"symbol":"EOS/ETH","nonce":1545735606}'
+```
+
+> Response：
+
+```response-data
+成功
+{
+    "errno": "OK",
+    "message": "Success",
+}
+失败
+{
+    "errno": "FAILED",
+    "message": "失败原因",
+}
+```
+
+### 请求Url    
+
+`POST spot/cancelOrder`
+
+### 参数列表 Body 
+
+| 参数名 | 参数类型 |  参数示例  |   参数描述   |
+| :----: | :------: | :--------: | :----------: |
+| symbol |  String  |  BTC/USDT  |  交易对名称  |
+|  oid   |   int    |    7293    | 取消的订单id |
+| nonce  |   int    | 1545820222 |    时间戳    |
+
+
+
+## 批量提交订单
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/batchOrders' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(postdata+secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+	"orders":[
+		{
+		   "symbol":"EOS/ETH",
+		   "px":"0.01",
+		   "qty":"10.2",
+		   "side":2,
+		   "category":1,
+		   "client_id":1
+		},
+		{
+		   "symbol":"EOS/ETH",
+		   "px":"0.01",
+		   "qty":"10.2",
+		   "side":2,
+		   "category":1,
+		   "client_id":2
+		}
+	],
+   "nonce":1533876299
+}'
+```
+
+> Response：
+
+```response-data
+成功:
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "client_id": 1,
+                "oid": 10540013
+            },
+            {
+                "client_id": 2,
+                "oid": 10540014
+            }
+        ]
+    }
+}
+部分成功:
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "client_id": 1,
+                "err": {
+                    "http_err":405,
+                    "err_code":"code",
+                    "err_msg":"失败原因"
+                }
+            },
+            {
+                "client_id": 2,
+                "oid": 10540014
+            }
+        ]
+    }
+}
+失败:
+{
+    "errno": "FAILED",
+    "message": "失败原因"
+}
+```
+
+### 请求Url    
+
+`POST spot/batchOrders`
+
+### 参数列表 Body 
+
+|  参数名  |  参数类型  |  参数示例  | 参数描述 |
+| :------: | :--------: | :--------: | :------: |
+| BTC/USDT | 交易对名称 |            |          |
+|  nonce   |    int     | 1545820222 |  时间戳  |
+
+### order说明 
+
+|  参数名  | 参数类型 |    参数示例    |                        参数描述                         |
+| :------: | :------: | :------------: | :-----------------------------------------------------: |
+|  symbol  |  String  |    BTC/USDT    |                       交易对名称                        |
+|    px    | Decimal  |      7293      |                          价格                           |
+|   qty    | Decimal  |      10.2      |                          数量                           |
+|   side   |   Int    |       2        |                     方向,1:买，2:卖                     |
+| category |   Int    |       1        | 类别，1:限价单,2:为市价单,市价单时价格必须为字符串的"0" |
+|   int    |    3     | 用户自定义的id |                                                         |
+
+## 批量取消订单
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/cancelOrders' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(postdata+secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+    "orders":[
+		{
+		   "symbol":"EOS/ETH",
+		   "orders":[
+				   10116356,
+				   10116357
+		    ]
+		}
+     ],
+    "nonce":1531968125
+}'
+```
+
+> Response：
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        // 取消成功的列表
+        "succeed": [ 
+            10116356,
+            10116357
+        ],
+        // 取消失败的列表
+        "failed": null
+    }
+}
+```
+
+### 请求Url    
+
+`POST spot/cancelOrders`
+
+### 参数列表 Body 
+
+| 参数名 |   参数类型   |                           参数示例                           |   参数描述   |
+| :----: | :----------: | :----------------------------------------------------------: | :----------: |
+| orders | cancelOrders | { 		   "symbol":"EOS/ETH", 		   "orders":[ 				   10116356, 				   10116357 		    ] 		} | 取消订单列表 |
+| nonce  |     int      |                          1545820222                          |    时间戳    |
+
+### cancelOrders说明
+
+| 参数名 | 参数类型 |  参数示例  | 参数描述 |
+| :----: | :------: | :--------: | :------: |
+| String | ETH/USDT | 交易对名称 |          |
+|  int   | [1,2,3]  | 订单id列表 |          |
+
+## 获取用户订单
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/userOrders?symbol=EOS/ETH&status=2&offset=1&size=2' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 100039428965' \
+--data-raw ''
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "oid": 10284160,
+                "uid":23249999,
+                "symbol": "EOS/ETH",
+                "px": "8",
+                "qty": "4",
+                "cum_qty": "0",
+                "swap_qty": "0",
+                "side": 1,
+                "category": 1,
+                "fee": "0",
+                "fee_ratio": "0",
+                "fee_coin_code": "0",
+                "cum_fee": "", 
+                "created_at": "2018-07-17T07:24:13.410507Z",
+                "finished_at": null,
+                "status": 2,
+                "errno": 0
+            }
+        ]
+    }
+}
+```
+
+### 请求Url
+
+`GET spot/userOrders`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |                           参数描述                           |
+| :----: | :------: | :------: | :----------------------------------------------------------: |
+| symbol |  String  | BTC/USDT |                           现货名称                           |
+| status |   int    |    2     | 状态,1:申报中的订单 2:委托和申报中的订单 3:已经完成的订单 如果status字段不传则返回所有状态的订单 |
+| offset |   int    |    0     |                            偏移量                            |
+|  size  |   int    |    20    |                             大小                             |
+|        |          |          |                                                              |
+
+## 获取用户资产
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/v1/ifaccount/users/vipMe' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw ''
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "account_id": 100039428965,                 // 用户ID
+        "email": "",                                // 用户邮箱
+        "phone":"",                                 // 手机号码
+        "account_type": 1,                          // 账号类型
+        "status": 2,                                // 账号状态
+        "asset_password_effective_time": -2,        // 资金密码有效时间
+        "ga_key": "unbound",                        // google验证码是否绑定
+        "kyc_type": 0,                              // kyc 认证类型
+        "kyc_status": 1,                            // kyc 认证状态
+        "user_assets":[
+            {
+                "coin_code":"",
+                "freeze_vol":"",
+                "available_vol":""
+            }
+        ]
+        "created_at": "2018-04-08T04:04:25.26468Z",
+        "updated_at": "2018-04-23T03:25:16.408297Z"
+    }
+}
+```
+
+### 请求Url
+
+`GET /v1/ifaccount/users/vipMe`
+
+
+
+## 查询用户订单详情
+
+> curl请求示例:
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/queryOrder' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+	"symbol":"ETH/USDT",
+	"orders":[
+		10000234234,
+		10000343434
+	]
+}'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        "orders":[
+            {
+                "oid":2192079529,
+                "symbol":"XDAG/ETH",
+                "px":"1.1",  // 订单申报价
+                "qty":"1",      // 申报量  
+                "cum_qty":"1", // 成交量
+                "swap_qty":"1.1",  // 交易额量
+                "side":1,  // 订单方向,1:买,2:卖
+                "category":1,  // 订单类型,1:限价,2:市价
+                "fee":"0.0011", // 订单手续费冻结量
+                "fee_ratio":"0.001", // 订单手续费比例
+                "fee_coin_code":"ETH", // 订单手续费code
+                "cum_fee":"0.0011",  // 订单成交产生手续费
+                "uid":2000628412, // 用户id
+                "created_at":"2019-02-28T10:28:14.01776Z",
+                "finished_at":"2019-02-28T10:28:14.040836Z",
+                "status":3, // 状态
+                "errno":0 
+            }
+        ]
+    }
+}
+```
+
+### 请求Url
+
+`POST spot/queryOrder`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |  参数描述  |
+| :----: | :------: | :------: | :--------: |
+| symbol |  String  | BTC/USDT |  现货名称  |
+| status |   int    | [1,23,4] | 订单id列表 |
+| offset |   int    |    0     |   偏移量   |
+|  size  |   int    |    20    |    大小    |
+
+
+
+## 获取用户的交易记录
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/userTrades?symbol=ETH/USDT&offset=0&size=60' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        // 交易记录列表,按创建时间由近及远排序
+        "trades":[
+            {
+                "oid":100039430677,
+                "tid":100039430678,
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",
+                "side":2,
+                "change":"0"
+            }
+        ]
+    }
+}
+```
+
+### 请求Url
+
+`GET spot/orderTrades`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 | 参数描述 |
+| :----: | :------: | :------: | :------: |
+| symbol |  String  | BTC/USDT | 现货名称 |
+| offset |   int    |    0     |  偏移量  |
+|  size  |   int    |    20    |   大小   |
+
+## 获取用户订单的交易记录
+
+> curl请求示例:
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/USDT&oid=1000121232' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> 返回数据:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        // 交易记录列表,按创建时间由近及远排序
+        "trades":[
+            {
+                "oid":100039430677,  //该交易记录的taker order id
+                "tid":100039430678,  //trade id
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",
+                "side":2,
+                "change":"0"
+            }
+        ]
+    }
+}
+```
+
+### 请求Url
+
+`GET spot/orderTrades`
+
+### 参数列表
+
+| 参数名 | 参数类型 | 参数示例 |   参数描述   |
+| :----: | :------: | :------: | :----------: |
+| symbol |  String  | BTC/USDT |   现货名称   |
+| offset |   int    |    1     | 查询的订单id |
+
