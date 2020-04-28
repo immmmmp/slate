@@ -1750,11 +1750,1010 @@ wss://host.com/swap/realTime
 
 
 
-# Spot Trading
-
-
-
 
 
 
 # Spot Trading
+
+
+
+
+# 公共信息-REST
+
+对于合约公共信息Request Url的EndPoint地址为：https://host.com/
+
+## GET SYMBOL INFO
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/instruments?symbol=BTC/USDT'
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "instruments": [
+            {
+            
+            "instrument_id": 22,  // spot symbol ID
+            "symbol": "BTC/USDT", 
+            "base_coin": "BTC",   
+            "quote_coin": "USDT", 
+            "rank": 5,            // System rank
+            "px_unit": "0.0001",  // price decimal
+            "qty_unit": "0.0001", // qyt decimal
+            "tip_limit": "0.2",   // price invalid range
+            "min_qty": "0.0001",  
+            "status": 1,          //    1  // online
+                                        2  // judging 
+                                        3  // testing
+                                        5  // suspend
+                                        6  // offline
+            "big_icon": "",       
+            "small_icon": "",
+            "gray_icon": "",
+            "created_at": null,
+            "market_order_risk_type": 1,//1:按order book价格幅度约束,
+            													2:按order book档位约束,
+            													0:don’t support market order
+            											
+            "market_order_risk_deal_scope": "0.2",
+            "fee_configs": [
+                {
+                    "coin_code": "BTC", // which coin to pay fee
+                    "fee_ratio": "0.1",
+                    "type": 3  //1:only take buy order fee,2:only take sell order fee,3:take both order fee
+                }
+            ] 
+            }
+        ]
+    }
+}
+
+```
+
+### Request Url
+
+`GET spot/instruments`
+
+### Params
+
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| symbol | String | BTC/USDT |             |
+
+
+
+## Get Symbol Depth
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/depth?symbol=BTC/USDT' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: WEB' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+
+        "asks": [
+            [
+                80000, // key
+                "8",   // price
+                "1",   // qty
+                0      
+            ],
+            [
+                82000,
+                "8.2",
+                "1",
+                0
+            ],
+        // 买盘,按价格由大到小排序
+        "bids": [
+            [
+                74000, // key
+                "7.4", // price 
+                "1",   // qty
+                0
+            ],
+            [
+                73000,
+                "7.3",
+                "1",
+                0
+            ],
+        ]
+    }
+}
+```
+
+### Request Url
+
+`GET spot/depth`
+
+### Params
+
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| symbol | String | BTC/USDT |             |
+
+
+
+## Get Symbol Ticker
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/tickers?symbol=BTC/USDT'
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": [ // ticker数组
+        {
+            "symbol": "ETH/USDT",
+            "last_px": "135.5", 
+            "open": "137.17",      
+            "close": "135.5",      
+            "low": "127.87",       
+            "high": "137.38",      
+            "avg_px": "134.838547255697", 
+            "last_qty": "10.135", 
+            "qty24": "21244.5602", 
+            "timestamp": 1551322866,
+            "change_rate": "-0.012174673762",
+            "change_value": "-1.67", 
+            "qty_day": "9789.7338",
+            "amount24": "2894738.555982" 
+        }
+    ]
+}
+```
+
+### Request Url
+
+`GET spot/ticker`
+
+### Params
+
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| symbol | String | BTC/USDT |  现货名称   |
+
+
+
+## Get Trade Records
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/trades?symbol=BTC/USDT&offset=0&size=10' 
+```
+
+> return data:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        "trades":[
+            {
+                "oid":100039430677,  //taker order id
+                "tid":100039430678,  //trade id 
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",  //utc time
+                "side":2,    //taker order side
+                "change":"0"  //the influence to the market
+            }
+        ]
+```
+
+### Request Url
+
+`GET spot/trades`
+
+### Params
+
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| symbol | String | BTC/USDT |             |
+| offset |  Int   |    0     |             |
+|  size  |  Int   |    20    |             |
+
+
+
+## Get k-Line Data
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/kline?symbol=BTC/USDT&startTime=0&endTime=2532656524&unit=5&resolution=M'
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": [ // 数组
+        {
+            "last_px": "135.5", 
+            "open": "137.17",      
+            "close": "135.5",      
+            "low": "127.87",      
+            "high": "137.38",      
+            "avg_px": "134.838547255697", 
+            "last_qty": "10.135", // last trade qty
+            "timestamp": 1551322866,
+            "change_rate": "-0.012174673762", 
+            "change_value": "-1.67", 
+        }
+    ]
+}
+```
+
+### Request Url
+
+`GET spot/kline`
+
+### Params
+
+|   Param    |  Type  |  Example   | Description |
+| :--------: | :----: | :--------: | :---------: |
+|   symbol   | String |  BTC/USDT  |             |
+| startTime  |  Int   |     0      |             |
+|  endTime   |  Int   | 2532656524 |             |
+|    unit    |  Int   |     5      |             |
+| resolution | String |     M      |             |
+
+# Trade API
+
+
+
+## Submit Order
+
+
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/submitOrder' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw '{
+   "symbol":"EOS/ETH",
+   "px":"0.01",
+   "qty":"10.2",
+   "side":2,
+   "category":1,
+   "nonce":1545820222
+}'
+```
+
+> Response：
+
+```response-data
+{
+	"errno": "OK",
+	"message": "Success",
+	"data": {
+		"oid": 10540013  //order id
+	}
+}
+fail: {
+	"errno": "failed",
+	"message": "失败原因",
+	
+}
+```
+
+### Request Url    
+
+`POST swap/submitOrder`
+
+### Params Body 
+
+|  Param   |  Type   |  Example   |                     Description                      |
+| :------: | :-----: | :--------: | :--------------------------------------------------: |
+|  symbol  | String  |  BTC/USDT  |                                                      |
+|    px    | Decimal |    7293    |                        Price                         |
+|   qty    | Decimal |    10.2    |                         Qty                          |
+|   side   |   Int   |     2      |                     1:buy 2:sell                     |
+| category |   Int   |     1      | 1:limit price order,2:market order,price must be "0" |
+|  nonce   |   int   | 1545820222 |                      Timestamp                       |
+
+
+
+## Cancel Order
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/cancelOrder' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw '{"oid":14369318,"symbol":"EOS/ETH","nonce":1545735606}'
+```
+
+> Response：
+
+```response-data
+success
+{
+    "errno": "OK",
+    "message": "Success",
+}
+fail
+{
+    "errno": "FAILED",
+    "message": "失败原因",
+}
+```
+
+### Request Url    
+
+`POST spot/cancelOrder`
+
+### Params Body 
+
+| Param  |  Type  |  Example   |      Description      |
+| :----: | :----: | :--------: | :-------------------: |
+| symbol | String |  BTC/USDT  |                       |
+|  oid   |  int   |    7293    | id of order to cancel |
+| nonce  |  int   | 1545820222 |       Timestamp       |
+
+
+
+## Batch Submit Order
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/batchOrders' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(postdata+secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+	"orders":[
+		{
+		   "symbol":"EOS/ETH",
+		   "px":"0.01",
+		   "qty":"10.2",
+		   "side":2,
+		   "category":1,
+		   "client_id":1
+		},
+		{
+		   "symbol":"EOS/ETH",
+		   "px":"0.01",
+		   "qty":"10.2",
+		   "side":2,
+		   "category":1,
+		   "client_id":2
+		}
+	],
+   "nonce":1533876299
+}'
+```
+
+> Response：
+
+```response-data
+success:
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "client_id": 1,
+                "oid": 10540013
+            },
+            {
+                "client_id": 2,
+                "oid": 10540014
+            }
+        ]
+    }
+}
+partly success:
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "client_id": 1,
+                "err": {
+                    "http_err":405,
+                    "err_code":"code",
+                    "err_msg":"失败原因"
+                }
+            },
+            {
+                "client_id": 2,
+                "oid": 10540014
+            }
+        ]
+    }
+}
+fail:
+{
+    "errno": "FAILED",
+    "message": "失败原因"
+}
+```
+
+### Request Url    
+
+`POST spot/batchOrders`
+
+### Params Body 
+
+|  Param   | Type |  Example   | Description |
+| :------: | :--: | :--------: | :---------: |
+| BTC/USDT |      |            |             |
+|  nonce   | int  | 1545820222 | Stimestamp  |
+
+### order  
+
+|  Param   |  Type   | Example  |                       Description                        |
+| :------: | :-----: | :------: | :------------------------------------------------------: |
+|  symbol  | String  | BTC/USDT |                                                          |
+|    px    | Decimal |   7293   |                          Price                           |
+|   qty    | Decimal |   10.2   |                           Qty                            |
+|   side   |   Int   |    2     |                       1:buy 2:sell                       |
+| category |   Int   |    1     | 1:limit price order,2:market order,the price must be "0" |
+|   int    |    3    |          |                                                          |
+
+## Batch Cancel Order
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/cancelOrders' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(postdata+secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+    "orders":[
+		{
+		   "symbol":"EOS/ETH",
+		   "orders":[
+				   10116356,
+				   10116357
+		    ]
+		}
+     ],
+    "nonce":1531968125
+}'
+```
+
+> Response：
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        // successfully canceled list 
+        "succeed": [ 
+            10116356,
+            10116357
+        ],
+        
+        "failed": null
+    }
+}
+```
+
+### Request Url    
+
+`POST spot/cancelOrders`
+
+### Params Body 
+
+| Param  |     Type     |                           Example                            | Description |
+| :----: | :----------: | :----------------------------------------------------------: | :---------: |
+| orders | cancelOrders | { 		   "symbol":"EOS/ETH", 		   "orders":[ 				   10116356, 				   10116357 		    ] 		} |             |
+| nonce  |     int      |                          1545820222                          |             |
+
+### cancelOrders说明
+
+| Param  |   Type   | Example | Description |
+| :----: | :------: | :-----: | :---------: |
+| String | ETH/USDT |         |             |
+|  int   | [1,2,3]  |         |             |
+
+## Get User Order
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/userOrders?symbol=EOS/ETH&status=2&offset=1&size=2' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 100039428965' \
+--data-raw ''
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "orders": [
+            {
+                "oid": 10284160,
+                "uid":23249999,
+                "symbol": "EOS/ETH",
+                "px": "8",
+                "qty": "4",
+                "cum_qty": "0",
+                "swap_qty": "0",
+                "side": 1,
+                "category": 1,
+                "fee": "0",
+                "fee_ratio": "0",
+                "fee_coin_code": "0",
+                "cum_fee": "", 
+                "created_at": "2018-07-17T07:24:13.410507Z",
+                "finished_at": null,
+                "status": 2,
+                "errno": 0
+            }
+        ]
+    }
+}
+```
+
+### Request Url
+
+`GET spot/userOrders`
+
+### Params
+
+| Param  |  Type  | Example  |                         Description                          |
+| :----: | :----: | :------: | :----------------------------------------------------------: |
+| symbol | String | BTC/USDT |                                                              |
+| status |  int   |    2     | 状态,1:申报中的订单 2:委托和申报中的订单 3:已经完成的订单 如果status字段不传则返回所有状态的订单 |
+| offset |  int   |    0     |                                                              |
+|  size  |  int   |    20    |                                                              |
+|        |        |          |                                                              |
+
+## Get User Balance
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/v1/ifaccount/users/vipMe' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Sign: d1701e739a359ee4c7a5003fe39ef27065c019f687b982a6e98bd375a673ec42' \
+--header 'Ex-Ts: 1532428054000000' \
+--header 'Ex-Accesskey: 34234423sdfsfsfwerwerwerwrwerwer' \
+--data-raw ''
+```
+
+> return data:
+
+```response-data
+{
+    "errno": "OK",
+    "message": "Success",
+    "data": {
+        "account_id": 100039428965,                 
+        "email": "",                                
+        "phone":"",                                 
+        "account_type": 1,                          
+        "status": 2,                               
+        "asset_password_effective_time": -2,        
+        "ga_key": "unbound",                        
+        "kyc_type": 0,                              
+        "kyc_status": 1,                            
+        "user_assets":[
+            {
+                "coin_code":"",
+                "freeze_vol":"",
+                "available_vol":""
+            }
+        ]
+        "created_at": "2018-04-08T04:04:25.26468Z",
+        "updated_at": "2018-04-23T03:25:16.408297Z"
+    }
+}
+```
+
+### Request Url
+
+`GET /v1/ifaccount/users/vipMe`
+
+
+
+## Get User Order Detail
+
+> curl example
+
+```curl
+curl --location --request POST 'https://api.host.com/spot/queryOrder' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000' \
+--data-raw '{
+	"symbol":"ETH/USDT",
+	"orders":[
+		10000234234,
+		10000343434
+	]
+}'
+```
+
+> return data:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        "orders":[
+            {
+                "oid":2192079529,
+                "symbol":"XDAG/ETH",
+                "px":"1.1",  // order price 
+                "qty":"1",        
+                "cum_qty":"1", // done qty
+                "swap_qty":"1.1",  
+                "side":1,  // 1:buy,2:sell
+                "category":1,  // 1:limit price,2:market price
+                "fee":"0.0011", 
+                "fee_ratio":"0.001", 
+                "fee_coin_code":"ETH", 
+                "cum_fee":"0.0011",  
+                "uid":2000628412, 
+                "created_at":"2019-02-28T10:28:14.01776Z",
+                "finished_at":"2019-02-28T10:28:14.040836Z",
+                "status":3, 
+                "errno":0 
+            }
+        ]
+    }
+}
+```
+
+### Request Url
+
+`POST spot/queryOrder`
+
+### Params
+
+| Param  |  Type  | Example  |  Description  |
+| :----: | :----: | :------: | :-----------: |
+| symbol | String | BTC/USDT |               |
+| status |  int   | [1,23,4] | order id list |
+| offset |  int   |    0     |               |
+|  size  |  int   |    20    |               |
+
+
+
+## Get User Trade Records
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/userTrades?symbol=ETH/USDT&offset=0&size=60' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> return data:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        // 交易记录列表,按创建时间由近及远排序
+        "trades":[
+            {
+                "oid":100039430677,
+                "tid":100039430678,
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",
+                "side":2,
+                "change":"0"
+            }
+        ]
+    }
+}
+```
+
+### Request Url
+
+`GET spot/orderTrades`
+
+### Params
+
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| symbol | String | BTC/USDT |             |
+| offset |  int   |    0     |             |
+|  size  |  int   |    20    |             |
+
+## Get User Trade Record By Order
+
+> curl example
+
+```curl
+curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/USDT&oid=1000121232' \
+--header 'Ex-Accesskey: 123123123213' \
+--header 'Ex-Sign: MD5(secretKey+Ex-Ts)' \
+--header 'Ex-Ver: 1008' \
+--header 'Ex-Dev: api' \
+--header 'Ex-Ts: 1541044393000000'
+```
+
+> return data:
+
+```response-data
+{
+    "errno":"OK",
+    "message":"Success",
+    "data":{
+        // 交易记录列表,按创建时间由近及远排序
+        "trades":[
+            {
+                "oid":100039430677,  //该交易记录的taker order id
+                "tid":100039430678,  //trade id
+                "symbol":"BTC/ETH",
+                "px":"0.06",
+                "qty":"21",
+                "fee":"0.0000000126",
+                "fee_coin_code":"ETH",
+                "created_at":"2018-04-19T03:27:21.62635069Z",
+                "side":2,
+                "change":"0"
+            }
+        ]
+    }
+}
+```
+
+### Request Url
+
+`GET spot/orderTrades`
+
+### Params
+
+| Param  |  Type  | Example  | Description  |
+| :----: | :----: | :------: | :----------: |
+| symbol | String | BTC/USDT |   现货名称   |
+| offset |  int   |    1     | 查询的订单id |
+
+# SPOT-RealTime(WebSocket)
+
+### 地址
+
+- 测试环境 `wss://api.host.com/v1/ifspot/realTime`
+- 生产环境 `wss://api.host.com/v1/ifspot/realTime`
+
+### 命令
+
+- 基本命令格式发送格式 `{"action":"","args":["arg1", "arg2", "arg3"]}` 如:客户端订阅EOS/ETH,USDT/BTC现货对的ticker的命令 {"action":"subscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]} 客户单取消这两个现货对的订阅 {"action":"unsubscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]}
+
+- 命令返回格式
+
+  ```undefined
+  {
+    "action":"<command>",
+    "success":true,         // 成功-true, 失败-false
+    "group":"<group>",
+    "request":{
+        // 原始Request Url
+    },
+    "error":""  // 失败时有这个字段返回具体错误原因
+  }
+  ```
+
+- 支持命令列表
+
+  ```
+  subscribe   // 订阅
+  unsubscribe //取消订阅
+  ```
+
+### 主题
+
+- 通用主题列表(不需要做授权认证)
+
+  ```undefined
+  这些主题列表是开放主题,不需要做ws认证.
+  Trade       //最新成交
+  Ticker      //实时价格
+  OrderBook   //深度
+  QuoteBin1m  //1分钟行情数据
+  QuoteBin5m  //5分钟行情数据
+  QuoteBin30m //30分钟行情数据
+  QuoteBin1h  //1小时行情数据
+  QuoteBin2h  //2小时行情数据
+  QuoteBin4h  //4小时行情数据
+  QuoteBin6h  //6小时行情数据
+  QuoteBin12h //12小时行情数据
+  QuoteBin1d  //日行情数据
+  QuoteBin1w  //周行情数据|
+  IndexBin1m  //1分钟指数行情数据|
+  IndexBin5m  //5分钟指数行情数据|
+  IndexBin30m //30分钟指数行情数据|
+  IndexBin1h  //1小时指数行情数据|
+  IndexBin2h  //2小时指数行情数据|
+  IndexBin4h  //4小时指数行情数据|
+  IndexBin6h  //6小时指数行情数据|
+  IndexBin12h //12小时指数行情数据|
+  IndexBin1d  //日指数行情数据|
+  IndexBin1w  //周指数行情数据|
+  ```
+
+- 说明
+
+1. Request Url订阅命令，主题列表主题的构成方式为<主题:现货对的Code(区分大小写)>,例如需要订阅现货EOS/ETH的实时深度和5分钟行情的命令为 `{"action":"subscribe","args":["OrderBook:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
+
+### 订阅数据格式
+
+- 基本格式如下
+
+  ```undefined
+  {
+    "group":"",
+    "action":1,
+    "data":{
+    }
+  }
+  // 订阅主题不同，data字段格式不同。data的具体以接口返回为准，Request Url输入对应主题的订阅命令获取
+  action:表示更新的数据类型
+  1:全量数据更新,
+  2:差量数据更新
+  3:插入数据更新
+  4:删除数据更新
+  ```
+
+### 认证
+
+```undefined
+如果需要订阅跟用户自己信息相关的数据等私有信息,需要做ws认证方式有两种
+1.通过用户名密码方式认证
+// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+{
+    "action":"access",
+    "args":[
+        "uid",       // 用户ID,必须是字符串
+        "web",              // 设备类型.同Dev(Ex-Dev) 必须是字符串
+        "1.0.0",            // 客户端版本号,Version(Ex-Ver）必须是字符串
+        "Sign",              // 加密串,同Sign(Ex-Sign),参考Api接口Sign计算方式. 必须是字符串
+        "1540286461000000",  // 同Ts(Ex-Ts) 单位:微秒,必须是字符串
+    ] 
+}
+2.通过accessKey认证
+// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+{
+    "action":"access",
+    "args":[
+        "Accesskey",       // 用户的Accesskey,必须是字符串
+        "api",              // Dev(Ex-Dev) 必须是字符串
+        "1.0.0",            // Version(Ex-Ver）必须是字符串
+        "Sign",              // Sign(Ex-Sign) 必须是字符串
+        "1540286461000000",  // Ts(Ex-Ts) 单位:微秒,必须是字符串
+    ] 
+}
+
+
+Sign参数的值为:md5(sercet_key+Ts(字符串))
+```
+
+### 订阅私有数据
+
+```undefined
+// 订阅完成后(认证通过)就可以收到UserProperty主题的私有数据了,暂时只有一个UserProperty主题，所有私有数据都在这个主题返回
+{
+    "action":"subscribe",
+    "args":["UserProperty"]
+}
+
+// UserProperty主题,返回的数据格式
+{
+    "group":"UserProperty",
+    "data":[
+        {
+            "action":1, // 操作类型
+            "order":{   // 订单信息
+
+            },
+            "s_assets":[  // 现货资产列表
+
+            ],
+            "c_assets":{  // 合约资产
+
+            }
+        }
+    ]
+}
+"group":"UserProperty",表示该用户的的现货数据.以后台业务操作为驱动,推送用户数据的更新.一次推送可能包括多次业务操作,所以data是以数组形式,从数组的头开始,按操作先后顺序存放的用户的一组操作.每组数据的元素包括:action(操作类型),order(订单信息),s_assets(现货资产信息,注意是现货资产数组),c_assets(合约资产信息).对于订单信息,现货资产信息,合约资产信息,只有当操作这些信息产生了更新,每组数据的元素才会包含该信息.
+action:操作类型有
+1 :撮合.
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+2 :提交订单
+   可能产生的影响:订单更新,合约资产更新
+3 :取消订单
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+11 :从合约资产化出到现货资产
+   可能产生的影响:合约资产更新,现货资产更新
+12 :从现货资产化出到合约账户
+```
+
+### 心跳
+
+- 服务端会每隔10秒发送一个PingFrame到客户端，正常情况下客户端均会回复一个PongFrame。如果服务端连续5个PingFrame均没有收到应答。并且在此期间没有收到客户端的其他数据，服务端会主动断开链接。大部分浏览器收到PingFrame后均会自动给以PongFrame应答，不需要业务层实现。
+
+- 服务端在业务层实现了一个PingMessage Handle，收到PingMessage后会自动回复一个PongMessage，客户端底层如果没有办法处理websocket协议层的ping/pong frame可以通过业务层的ping/pong message判断链接是否健康。具体消息如下
+
+  ```undefined
+  // ping
+  {"action":"ping"}
+  // pong
+  {"group":"System","data":"pong"}
+  ```
+
+### 测试
+
+- 任何标准的Websocket客户端都可以用来测试
+
+- Chrome websocket测试插件
+
+  ```undefined
+  https://chrome.google.com/webstore/search/WebSocket%20Test%20Client?utm_source=chrome-ntp-icon
+  ```
+
