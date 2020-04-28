@@ -2595,3 +2595,186 @@ curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/
 | symbol |  String  | BTC/USDT |   现货名称   |
 | offset |   int    |    1     | 查询的订单id |
 
+
+# SPOT-实时数据(WebSocket)
+
+### 地址
+
+- 测试环境 `wss://api.host.com/v1/ifspot/realTime`
+- 生产环境 `wss://api.host.com/v1/ifspot/realTime`
+
+### 命令
+
+- 基本命令格式发送格式 `{"action":"","args":["arg1", "arg2", "arg3"]}` 如:客户端订阅EOS/ETH,USDT/BTC现货对的ticker的命令 {"action":"subscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]} 客户单取消这两个现货对的订阅 {"action":"unsubscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]}
+
+- 命令返回格式
+
+  ```undefined
+  {
+    "action":"<command>",
+    "success":true,         // 成功-true, 失败-false
+    "group":"<group>",
+    "request":{
+        // 原始请求
+    },
+    "error":""  // 失败时有这个字段返回具体错误原因
+  }
+  ```
+
+- 支持命令列表
+
+  ```
+  subscribe   // 订阅
+  unsubscribe //取消订阅
+  ```
+
+### 主题
+
+- 通用主题列表(不需要做授权认证)
+
+  ```undefined
+  这些主题列表是开放主题,不需要做ws认证.
+  Trade       //最新成交
+  Ticker      //实时价格
+  OrderBook   //深度
+  QuoteBin1m  //1分钟行情数据
+  QuoteBin5m  //5分钟行情数据
+  QuoteBin30m //30分钟行情数据
+  QuoteBin1h  //1小时行情数据
+  QuoteBin2h  //2小时行情数据
+  QuoteBin4h  //4小时行情数据
+  QuoteBin6h  //6小时行情数据
+  QuoteBin12h //12小时行情数据
+  QuoteBin1d  //日行情数据
+  QuoteBin1w  //周行情数据|
+  IndexBin1m  //1分钟指数行情数据|
+  IndexBin5m  //5分钟指数行情数据|
+  IndexBin30m //30分钟指数行情数据|
+  IndexBin1h  //1小时指数行情数据|
+  IndexBin2h  //2小时指数行情数据|
+  IndexBin4h  //4小时指数行情数据|
+  IndexBin6h  //6小时指数行情数据|
+  IndexBin12h //12小时指数行情数据|
+  IndexBin1d  //日指数行情数据|
+  IndexBin1w  //周指数行情数据|
+  ```
+
+- 说明
+
+1. 请求订阅命令，主题列表主题的构成方式为<主题:现货对的Code(区分大小写)>,例如需要订阅现货EOS/ETH的实时深度和5分钟行情的命令为 `{"action":"subscribe","args":["OrderBook:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
+
+### 订阅数据格式
+
+- 基本格式如下
+
+  ```undefined
+  {
+    "group":"",
+    "action":1,
+    "data":{
+    }
+  }
+  // 订阅主题不同，data字段格式不同。data的具体以接口返回为准，请求输入对应主题的订阅命令获取
+  action:表示更新的数据类型
+  1:全量数据更新,
+  2:差量数据更新
+  3:插入数据更新
+  4:删除数据更新
+  ```
+
+### 认证
+
+```undefined
+如果需要订阅跟用户自己信息相关的数据等私有信息,需要做ws认证方式有两种
+1.通过用户名密码方式认证
+// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+{
+    "action":"access",
+    "args":[
+        "uid",       // 用户ID,必须是字符串
+        "web",              // 设备类型.同Dev(Ex-Dev) 必须是字符串
+        "1.0.0",            // 客户端版本号,Version(Ex-Ver）必须是字符串
+        "Sign",              // 加密串,同Sign(Ex-Sign),参考Api接口Sign计算方式. 必须是字符串
+        "1540286461000000",  // 同Ts(Ex-Ts) 单位:微秒,必须是字符串
+    ] 
+}
+2.通过accessKey认证
+// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+{
+    "action":"access",
+    "args":[
+        "Accesskey",       // 用户的Accesskey,必须是字符串
+        "api",              // Dev(Ex-Dev) 必须是字符串
+        "1.0.0",            // Version(Ex-Ver）必须是字符串
+        "Sign",              // Sign(Ex-Sign) 必须是字符串
+        "1540286461000000",  // Ts(Ex-Ts) 单位:微秒,必须是字符串
+    ] 
+}
+
+
+Sign参数的值为:md5(sercet_key+Ts(字符串))
+```
+
+### 订阅私有数据
+
+```undefined
+// 订阅完成后(认证通过)就可以收到UserProperty主题的私有数据了,暂时只有一个UserProperty主题，所有私有数据都在这个主题返回
+{
+    "action":"subscribe",
+    "args":["UserProperty"]
+}
+
+// UserProperty主题,返回的数据格式
+{
+    "group":"UserProperty",
+    "data":[
+        {
+            "action":1, // 操作类型
+            "order":{   // 订单信息
+
+            },
+            "s_assets":[  // 现货资产列表
+
+            ],
+            "c_assets":{  // 合约资产
+
+            }
+        }
+    ]
+}
+"group":"UserProperty",表示该用户的的现货数据.以后台业务操作为驱动,推送用户数据的更新.一次推送可能包括多次业务操作,所以data是以数组形式,从数组的头开始,按操作先后顺序存放的用户的一组操作.每组数据的元素包括:action(操作类型),order(订单信息),s_assets(现货资产信息,注意是现货资产数组),c_assets(合约资产信息).对于订单信息,现货资产信息,合约资产信息,只有当操作这些信息产生了更新,每组数据的元素才会包含该信息.
+action:操作类型有
+1 :撮合.
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+2 :提交订单
+   可能产生的影响:订单更新,合约资产更新
+3 :取消订单
+   可能产生的影响:订单更新,仓位更新,合约资产更新
+11 :从合约资产化出到现货资产
+   可能产生的影响:合约资产更新,现货资产更新
+12 :从现货资产化出到合约账户
+```
+
+### 心跳
+
+- 服务端会每隔10秒发送一个PingFrame到客户端，正常情况下客户端均会回复一个PongFrame。如果服务端连续5个PingFrame均没有收到应答。并且在此期间没有收到客户端的其他数据，服务端会主动断开链接。大部分浏览器收到PingFrame后均会自动给以PongFrame应答，不需要业务层实现。
+
+- 服务端在业务层实现了一个PingMessage Handle，收到PingMessage后会自动回复一个PongMessage，客户端底层如果没有办法处理websocket协议层的ping/pong frame可以通过业务层的ping/pong message判断链接是否健康。具体消息如下
+
+  ```undefined
+  // ping
+  {"action":"ping"}
+  // pong
+  {"group":"System","data":"pong"}
+  ```
+
+### 测试
+
+- 任何标准的Websocket客户端都可以用来测试
+
+- Chrome websocket测试插件
+
+  ```undefined
+  https://chrome.google.com/webstore/search/WebSocket%20Test%20Client?utm_source=chrome-ntp-icon
+  ```
+
