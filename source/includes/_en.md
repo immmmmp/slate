@@ -49,7 +49,7 @@ For authenticated requests, the following headers should be sent with the reques
 
 REST endpoint URL: **https://host.com/**
 
-## Obtain Data of Index Candlestick Chart
+## Get Data of Index Candlestick Chart
 
 > curl request example:
 
@@ -95,7 +95,7 @@ curl --location --request GET 'https://host.com/swap/indexkline?indexID=11&start
 |    unit    |  Int   |     5      | It indicates the selected time length. For example, 5M means that it takes 5 minutes to present a new candlestick on the candlestick chart. |
 | resolution | String |     M      | It indicates the frequency type of obtaining candlestick chart data. M: minute, H: hour, D: day |
 
-## Obtain Data of Contract Trading Records
+## Get Data of Contract Trading Records
 
 > curl request example:
 
@@ -125,12 +125,12 @@ curl --location --request GET 'https://host.com/swap/trades?instrumentID=1'
              
              1 //buy order:taker,order side：open long buy,open short sell
              2 //buy order:taker,order side：open long buy,close long sell 
-             3 //buy order:taker,order side：close short buy , open short sell
-             4 //buy order:taker,order side：close short buy , close long sell
-             5 //sell order:taker,order side：open short buy,open long sell
-             6 //sell order:taker,order side：open short sell, close short buy
-             7 //sell order:taker,order side：close long sell, open long buy
-             8 //sell order:taker,order side：close long sell, close short buy
+             3 //buy order:taker,order side：：close short buy , open short sell
+             4 //buy order:taker,order side：：close short buy , close long sell
+             5 //sell order:taker,order side：：open short buy,open long sell
+             6 //sell order:taker,order side：：open short sell, close short buy
+             7 //sell order:taker,order side：：close long sell, open long buy
+             8 //sell order:taker,order side：：close long sell, close short buy
                 "change": "0"    				// the influence to the market
                 										if the latest price before this transaction is 10 and the latest price after this transaction is 11, then the change is "1".
             }
@@ -151,7 +151,7 @@ curl --location --request GET 'https://host.com/swap/trades?instrumentID=1'
 
 
 
-## Obtain ADL Sequence of Contract Position
+## Get ADL Sequence of Contract Position
 
 >curl request example:
 
@@ -212,7 +212,7 @@ curl --location --request GET 'https://host.com/swap/pnls?instrumentID=1'
 
 
 
-## Obtain Index List
+## Get Index List
 
 ###Request Url 
 
@@ -272,7 +272,7 @@ curl --location --request GET 'https://host.com/swap/indexes'
 }
 ```
 
-## Obtain Contract Depth of a Coin
+## Get Contract Depth of a Coin
 
 >curl request example:
 
@@ -322,7 +322,7 @@ curl --location --request GET 'https://host.com/swap/depth?instrumentID=1&count=
 
 
 
-## Obtain Contract Info
+## Get Contract Info
 
 >curl request example:
 
@@ -412,7 +412,7 @@ curl --location --request GET 'https://host.com/swap/instruments?instrumentID=11
 
 
 
-## Obtain Single Contract Info
+## Get Single Contract Info
 
 >curl request example:
 
@@ -453,7 +453,7 @@ curl --location --request GET 'https://host.com/swap/fundingrate?instrumentID=11
 
 
 
-## Obtain Data of Contract Candlestick Chart
+## Get Data of Contract Candlestick Chart
 
 
 
@@ -510,7 +510,7 @@ Public
 
 
 
-## Obtain Data of Contract Ticker
+## Get Data of Contract Ticker
 
 ###Request Url    
 
@@ -688,7 +688,7 @@ curl --location --request POST 'https://host.com/swap/batchOrders' \
 > Response   ：
 
 ```response-data
-#成功
+#success
 {
   "errno": "OK",
   "message": "Success",
@@ -705,7 +705,7 @@ curl --location --request POST 'https://host.com/swap/batchOrders' \
       ]
   }
 }
-#失败
+#failed
 {
   "errno": "OK",
   "message": "Success",
@@ -824,7 +824,7 @@ curl --location --request POST 'https://host.com/swap/submitOrder' \
 
 
 
-## Obtain Contract Account Info
+## Get Contract Account Info
 
 > curl request example:
 
@@ -872,7 +872,7 @@ contract accounts list
 
 
 
-## Obtain Contract Position of User
+## Get Contract Position of User
 
 > curl request example:
 
@@ -946,7 +946,7 @@ curl --location --request GET 'https://host.com/swap/userPositions?coinCode=USDT
 
 
 
-## Obtain Funding Cost of Position
+## Get Funding Cost of Position
 
 > curl request example:
 
@@ -1006,7 +1006,7 @@ curl --location --request GET 'https://host.com/swap/positionTax?instrumentID=32
 
 
 
-## Obtain Transaction History of User
+## Get Transaction History of User
 
 > curl request example:
 
@@ -1342,7 +1342,7 @@ curl --location --request GET 'https://host.com/swap/createAccount?instrumentID=
 
 
 
-## Obtain Liquidation Records of User
+## Get Liquidation Records of User
 
 > curl request example:
 
@@ -1496,7 +1496,7 @@ curl --location --request POST 'http://host.com/swap/cancelPlanOrders' \
 
 
 
-## Obtain Trigger Order Records of User
+## Get Trigger Order Records of User
 
 > curl request example:
 
@@ -1750,17 +1750,20 @@ wss://host.com/swap/realTime
 
 
 
-
-
-
 # Spot Trading
 
 
 
 
-# 公共信息-REST
 
-对于合约公共信息Request Url的EndPoint地址为：https://host.com/
+
+
+
+
+
+# Public Info-REST
+
+The endpoint address of Request Url of contract public info：https://host.com/
 
 ## GET SYMBOL INFO
 
@@ -1906,7 +1909,7 @@ curl --location --request GET 'https://api.host.com/spot/tickers?symbol=BTC/USDT
 {
     "errno": "OK",
     "message": "Success",
-    "data": [ // ticker数组
+    "data": [ // ticker array
         {
             "symbol": "ETH/USDT",
             "last_px": "135.5", 
@@ -1933,9 +1936,9 @@ curl --location --request GET 'https://api.host.com/spot/tickers?symbol=BTC/USDT
 
 ### Params
 
-| Param  |  Type  | Example  | Description |
-| :----: | :----: | :------: | :---------: |
-| symbol | String | BTC/USDT |  现货名称   |
+| Param  |  Type  | Example  |   Description   |
+| :----: | :----: | :------: | :-------------: |
+| symbol | String | BTC/USDT | spot stock name |
 
 
 
@@ -1998,7 +2001,7 @@ curl --location --request GET 'https://api.host.com/spot/kline?symbol=BTC/USDT&s
 {
     "errno": "OK",
     "message": "Success",
-    "data": [ // 数组
+    "data": [ // array
         {
             "last_px": "135.5", 
             "open": "137.17",      
@@ -2115,7 +2118,7 @@ success
 fail
 {
     "errno": "FAILED",
-    "message": "失败原因",
+    "message": "failure reason",
 }
 ```
 
@@ -2198,7 +2201,7 @@ partly success:
                 "err": {
                     "http_err":405,
                     "err_code":"code",
-                    "err_msg":"失败原因"
+                    "err_msg":"failure reason"
                 }
             },
             {
@@ -2211,7 +2214,7 @@ partly success:
 fail:
 {
     "errno": "FAILED",
-    "message": "失败原因"
+    "message": "failure reason"
 }
 ```
 
@@ -2221,10 +2224,10 @@ fail:
 
 ### Params Body 
 
-|  Param   | Type |  Example   | Description |
-| :------: | :--: | :--------: | :---------: |
-| BTC/USDT |      |            |             |
-|  nonce   | int  | 1545820222 | Stimestamp  |
+| Param  |  Type  |  Example   | Description |
+| :----: | :----: | :--------: | :---------: |
+| symbol | String |  BTC/USDT  |             |
+| nonce  |  int   | 1545820222 | Stimestamp  |
 
 ### order  
 
@@ -2235,7 +2238,7 @@ fail:
 |   qty    | Decimal |   10.2   |                           Qty                            |
 |   side   |   Int   |    2     |                       1:buy 2:sell                       |
 | category |   Int   |    1     | 1:limit price order,2:market order,the price must be "0" |
-|   int    |    3    |          |                                                          |
+|  nonce   |   int   |    3     |                                                          |
 
 ## Batch Cancel Order
 
@@ -2293,10 +2296,10 @@ curl --location --request POST 'https://api.host.com/spot/cancelOrders' \
 
 ### cancelOrders说明
 
-| Param  |   Type   | Example | Description |
-| :----: | :------: | :-----: | :---------: |
-| String | ETH/USDT |         |             |
-|  int   | [1,2,3]  |         |             |
+| Param  |  Type  | Example  | Description |
+| :----: | :----: | :------: | :---------: |
+| orders | String | ETH/USDT |             |
+| nonce  |  int   | [1,2,3]  |             |
 
 ## Get User Order
 
@@ -2353,7 +2356,7 @@ curl --location --request GET 'https://api.host.com/spot/userOrders?symbol=EOS/E
 | Param  |  Type  | Example  |                         Description                          |
 | :----: | :----: | :------: | :----------------------------------------------------------: |
 | symbol | String | BTC/USDT |                                                              |
-| status |  int   |    2     | 状态,1:申报中的订单 2:委托和申报中的订单 3:已经完成的订单 如果status字段不传则返回所有状态的订单 |
+| status |  int   |    2     | status,1: requested orders 2:requested and opened orders 3: completed orders   if status field is not transferred then orders under all statuses will be returned |
 | offset |  int   |    0     |                                                              |
 |  size  |  int   |    20    |                                                              |
 |        |        |          |                                                              |
@@ -2494,7 +2497,7 @@ curl --location --request GET 'https://api.host.com/spot/userTrades?symbol=ETH/U
     "errno":"OK",
     "message":"Success",
     "data":{
-        // 交易记录列表,按创建时间由近及远排序
+        // trade records list, sorted by created time from latest to farest
         "trades":[
             {
                 "oid":100039430677,
@@ -2545,10 +2548,10 @@ curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/
     "errno":"OK",
     "message":"Success",
     "data":{
-        // 交易记录列表,按创建时间由近及远排序
+        // trade records list, sorted by created time from latest to farest
         "trades":[
             {
-                "oid":100039430677,  //该交易记录的taker order id
+                "oid":100039430677,  //taker order id of the trade record
                 "tid":100039430678,  //trade id
                 "symbol":"BTC/ETH",
                 "px":"0.06",
@@ -2570,81 +2573,81 @@ curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/
 
 ### Params
 
-| Param  |  Type  | Example  | Description  |
-| :----: | :----: | :------: | :----------: |
-| symbol | String | BTC/USDT |   现货名称   |
-| offset |  int   |    1     | 查询的订单id |
+| Param  |  Type  | Example  |    Description     |
+| :----: | :----: | :------: | :----------------: |
+| symbol | String | BTC/USDT |  spot stock name   |
+| offset |  int   |    1     | query the order id |
 
 # SPOT-RealTime(WebSocket)
 
-### 地址
+### Address
 
-- 测试环境 `wss://api.host.com/v1/ifspot/realTime`
-- 生产环境 `wss://api.host.com/v1/ifspot/realTime`
+- test environment `wss://api.host.com/v1/ifspot/realTime`
+- production environment `wss://api.host.com/v1/ifspot/realTime`
 
-### 命令
+### Command
 
-- 基本命令格式发送格式 `{"action":"","args":["arg1", "arg2", "arg3"]}` 如:客户端订阅EOS/ETH,USDT/BTC现货对的ticker的命令 {"action":"subscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]} 客户单取消这两个现货对的订阅 {"action":"unsubscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]}
+- The sending format of basic command format `{"action":"","args":["arg1", "arg2", "arg3"]}`  eg. the command for subscribing the tickers of EOS/ETH,USDT/BTC spot trading pair {"action":"subscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]}   Client end unsubscribes the tickers of these two pairs {"action":"unsubscribe","args":["Ticker:EOS/ETH", "Ticker:USDT/BTC"]}
 
-- 命令返回格式
+- Returning format of command
 
   ```undefined
   {
     "action":"<command>",
-    "success":true,         // 成功-true, 失败-false
+    "success":true,         // success-true, failed-false
     "group":"<group>",
     "request":{
-        // 原始Request Url
+        // Original Request Url
     },
-    "error":""  // 失败时有这个字段返回具体错误原因
+    "error":""  // error reason will be returned via this field when failed
   }
   ```
 
-- 支持命令列表
+- Supported command list
 
   ```
-  subscribe   // 订阅
-  unsubscribe //取消订阅
+  subscribe   // subscribe
+  unsubscribe // unsubscribe
   ```
 
-### 主题
+### Theme
 
-- 通用主题列表(不需要做授权认证)
+- General theme list (no authorization verification required)
 
   ```undefined
-  这些主题列表是开放主题,不需要做ws认证.
-  Trade       //最新成交
-  Ticker      //实时价格
-  OrderBook   //深度
-  QuoteBin1m  //1分钟行情数据
-  QuoteBin5m  //5分钟行情数据
-  QuoteBin30m //30分钟行情数据
-  QuoteBin1h  //1小时行情数据
-  QuoteBin2h  //2小时行情数据
-  QuoteBin4h  //4小时行情数据
-  QuoteBin6h  //6小时行情数据
-  QuoteBin12h //12小时行情数据
-  QuoteBin1d  //日行情数据
-  QuoteBin1w  //周行情数据|
-  IndexBin1m  //1分钟指数行情数据|
-  IndexBin5m  //5分钟指数行情数据|
-  IndexBin30m //30分钟指数行情数据|
-  IndexBin1h  //1小时指数行情数据|
-  IndexBin2h  //2小时指数行情数据|
-  IndexBin4h  //4小时指数行情数据|
-  IndexBin6h  //6小时指数行情数据|
-  IndexBin12h //12小时指数行情数据|
-  IndexBin1d  //日指数行情数据|
-  IndexBin1w  //周指数行情数据|
+  The following are open themes, no ws verification required.
+  Trade       //latest dealed
+  Ticker      //real time price实时价格
+  OrderBook   //depth
+  QuoteBin1m  //1 minute quote data
+  QuoteBin5m  //5 minutes quote data
+  QuoteBin30m //30 minutes quote data
+  QuoteBin1h  //1 hour quote data
+  QuoteBin2h  //2 hours quote data
+  QuoteBin4h  //4 hours quote data
+  QuoteBin6h  //6 hours quote data
+  QuoteBin12h //12 hours quote data
+  QuoteBin1d  //daily quote data
+  QuoteBin1w  //weekly quote price
+  IndexBin1m  //1 minute index quote data
+  IndexBin5m  //5 minutes index quote data
+  IndexBin30m //30 minutes index quote data
+  IndexBin1h  //1 hour index quote data
+  IndexBin2h  //2 hours index quote data
+  IndexBin4h  //4 hours index quote data
+  IndexBin6h  //6 hours index quote data
+  IndexBin12h //12 hours index quote data
+  IndexBin1d  //daily index quote data
+  IndexBin1w  //weekly index quote data
   ```
 
-- 说明
+- Instructions
 
-1. Request Url订阅命令，主题列表主题的构成方式为<主题:现货对的Code(区分大小写)>,例如需要订阅现货EOS/ETH的实时深度和5分钟行情的命令为 `{"action":"subscribe","args":["OrderBook:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
+1. Request Url subscribe command，composition of themes in the theme list is <theme: code of spot trading pairs (case sensitive)>, such as the command for subscribing the spot trading pair EOS/ETH's real time depth and 5 minutes quote data is `{"action":"subscribe","args":["OrderBook:EOS/ETH","QuoteBin5m:EOS/ETH"]}`
 
-### 订阅数据格式
+### Format of subscribed data
 
-- 基本格式如下
+- Basic format
 
   ```undefined
   {
@@ -2653,92 +2656,92 @@ curl --location --request GET 'https://api.host.com/spot/orderTrades?symbol=ETH/
     "data":{
     }
   }
-  // 订阅主题不同，data字段格式不同。data的具体以接口返回为准，Request Url输入对应主题的订阅命令获取
-  action:表示更新的数据类型
-  1:全量数据更新,
-  2:差量数据更新
-  3:插入数据更新
-  4:删除数据更新
+  // When subscribed theme is different, data field format is different. Details of data rely on api return，obtained by entering corresponding theme command in Request Url
+  action: indicates the type of updated data
+  1:full data update
+  2:changed data update
+  3:inserted data update
+  4:deleted data update
   ```
 
-### 认证
+### Verification
 
 ```undefined
-如果需要订阅跟用户自己信息相关的数据等私有信息,需要做ws认证方式有两种
-1.通过用户名密码方式认证
-// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+if need to subscribe information such as data related to user's self-information, etc., then there are 2 ways to do ws verification.
+1.verification through username and password
+// refer to Api Sign calculation method (the sequence of parameters is important, please don't mess up with the sequence参考Api)
 {
     "action":"access",
     "args":[
-        "uid",       // 用户ID,必须是字符串
-        "web",              // 设备类型.同Dev(Ex-Dev) 必须是字符串
-        "1.0.0",            // 客户端版本号,Version(Ex-Ver）必须是字符串
-        "Sign",              // 加密串,同Sign(Ex-Sign),参考Api接口Sign计算方式. 必须是字符串
-        "1540286461000000",  // 同Ts(Ex-Ts) 单位:微秒,必须是字符串
+        "uid",       // user ID, must be string
+        "web",              // device type.same as Dev(Ex-Dev), must be string
+        "1.0.0",            // client end version number, Version(Ex-Ver）, must be string
+        "Sign",              // encrypted string, same as Sign(Ex-Sign), refer to Api Sign calculation method, must be string
+        "1540286461000000",  // same as Ts(Ex-Ts)  unit:microsecond, must be string
     ] 
 }
-2.通过accessKey认证
-// 参考Api接口Sign计算方式(参数顺序很重要，别搞错顺序了)
+2.verification through accessKey
+// refer to Api Sign Calcultation methode. The sequence of parameters is very important. Please don't mess up with the sequence.)
 {
     "action":"access",
     "args":[
-        "Accesskey",       // 用户的Accesskey,必须是字符串
-        "api",              // Dev(Ex-Dev) 必须是字符串
-        "1.0.0",            // Version(Ex-Ver）必须是字符串
-        "Sign",              // Sign(Ex-Sign) 必须是字符串
-        "1540286461000000",  // Ts(Ex-Ts) 单位:微秒,必须是字符串
+        "Accesskey",       // Accesskey of user,must be string
+        "api",              // Dev(Ex-Dev), must be string
+        "1.0.0",            // Version(Ex-Ver）, must be sting
+        "Sign",              // Sign(Ex-Sign), must be string
+        "1540286461000000",  // Ts(Ex-Ts), unit:microsecond, must be string
     ] 
 }
 
 
-Sign参数的值为:md5(sercet_key+Ts(字符串))
+parameter value of Sign is: md5(sercet_key+Ts(string))
 ```
 
-### 订阅私有数据
+### Subscribe Private Data
 
 ```undefined
-// 订阅完成后(认证通过)就可以收到UserProperty主题的私有数据了,暂时只有一个UserProperty主题，所有私有数据都在这个主题返回
+// when subscription is completed (verification passed), private data of UserProperty theme can be received. Currently there is only one UserProperty theme. All private data will be returned in this theme.
 {
     "action":"subscribe",
     "args":["UserProperty"]
 }
 
-// UserProperty主题,返回的数据格式
+// UserProperty theme,the format of returned data
 {
     "group":"UserProperty",
     "data":[
         {
-            "action":1, // 操作类型
-            "order":{   // 订单信息
+            "action":1, // operation type
+            "order":{   // order information
 
             },
-            "s_assets":[  // 现货资产列表
+            "s_assets":[  // spot asset list
 
             ],
-            "c_assets":{  // 合约资产
+            "c_assets":{  // contract asset
 
             }
         }
     ]
 }
-"group":"UserProperty",表示该用户的的现货数据.以后台业务操作为驱动,推送用户数据的更新.一次推送可能包括多次业务操作,所以data是以数组形式,从数组的头开始,按操作先后顺序存放的用户的一组操作.每组数据的元素包括:action(操作类型),order(订单信息),s_assets(现货资产信息,注意是现货资产数组),c_assets(合约资产信息).对于订单信息,现货资产信息,合约资产信息,只有当操作这些信息产生了更新,每组数据的元素才会包含该信息.
-action:操作类型有
-1 :撮合.
-   可能产生的影响:订单更新,仓位更新,合约资产更新
-2 :提交订单
-   可能产生的影响:订单更新,合约资产更新
-3 :取消订单
-   可能产生的影响:订单更新,仓位更新,合约资产更新
-11 :从合约资产化出到现货资产
-   可能产生的影响:合约资产更新,现货资产更新
-12 :从现货资产化出到合约账户
+"group":"UserProperty", indicating the user's spot trading data. Driven by back-end operation. Push user data updates. One push may include multiple business operations, so data is in the form of an array, starting from the head of the array, a set of user operations stored in order of operations. The elements of each group of data includes: action(operation type), order(order information), s_assets(spot asset information, note it is the array of spot assets), c_assets(contract asset information). For order information, spot asset information, contract asset information, only when the operation of these information has generated updates, can each set of data elements contain that information. 
+action: operation types include
+1 :matching
+   possible impact: order update, position update, contract asset update
+2 :submit order
+   possible impact: order update, contract asset update
+3 :cancel order
+   possible impact: order update, position update, contract asset update
+11 :transfer from contract asset to spot asset
+   possible impact:contract asset update, spot asset update
+12 :trasfer from spot asset to contract account
 ```
 
-### 心跳
+### Heartbeat
 
-- 服务端会每隔10秒发送一个PingFrame到客户端，正常情况下客户端均会回复一个PongFrame。如果服务端连续5个PingFrame均没有收到应答。并且在此期间没有收到客户端的其他数据，服务端会主动断开链接。大部分浏览器收到PingFrame后均会自动给以PongFrame应答，不需要业务层实现。
+- The server will send a PingFrame to client end every 10 seconds. Under normal circumstances, the client end will reply with a PongFrame. If the server does not receive a response for 5 consecutive PingFrames, and during this period, no other data from the client is received, the server will actively disconnect the link. After receiving PingFrame, most browsers will automatically respond with PongFrame without the need of business layer implementation. 
 
-- 服务端在业务层实现了一个PingMessage Handle，收到PingMessage后会自动回复一个PongMessage，客户端底层如果没有办法处理websocket协议层的ping/pong frame可以通过业务层的ping/pong message判断链接是否健康。具体消息如下
+- The server implements a PingMessage Handle in the business layer. After receiving the PingMessage, it will automatically reply with a PongMessage. If the bottom layer of the client end has no way to handle the ping/pong frame of the websocket protocol layer, the ping/pong message of the business layer can determine whether the link is healthy. The specific message is as follows.
 
   ```undefined
   // ping
@@ -2747,11 +2750,11 @@ action:操作类型有
   {"group":"System","data":"pong"}
   ```
 
-### 测试
+### Testing
 
-- 任何标准的Websocket客户端都可以用来测试
+- Websocket client ends of any standards can be used for testing
 
-- Chrome websocket测试插件
+- Chrome websocket test plugin
 
   ```undefined
   https://chrome.google.com/webstore/search/WebSocket%20Test%20Client?utm_source=chrome-ntp-icon
